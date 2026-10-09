@@ -1,0 +1,391 @@
+{%- liquid
+  assign product = block.settings.product
+
+  # Style Kayo : libellé au-dessus, boutons en dessous
+  assign inner_class = 'd:flex gp:s4 fld:column joeve-variants__option'
+  assign container_class = 'xo-product-variant__inner d:flex fld:column gp:var(--container-gap) joeve-variants'
+  assign option_label_class = 'xo-product-variant__inner-name joeve-variants__label'
+  assign option_value_class = 'xo-product-variant__inner-value d:flex ai:center gp:var(--gap) joeve-variants__values'
+  assign container_style = ''
+
+  assign container_gap = block.settings.option_spacing | divided_by: 10.0
+  assign container_style = '--container-gap: ' | append: container_gap | append: 'rem;'
+  assign spacing = block.settings.option_value_spacing | divided_by: 10.0
+  assign option_value_style = '--gap: ' | append: spacing | append: 'rem;'
+
+  # Couleurs du sélecteur (modifiables dans l'éditeur de thème)
+  # Pensées pour un site beige : tailles blanches, taille sélectionnée en noir.
+  assign container_style = container_style | append: '--joeve-picker-bg: ' | append: block.settings.picker_selected_bg | append: ';'
+  assign container_style = container_style | append: '--joeve-picker-selected-text: ' | append: block.settings.picker_selected_text | append: ';'
+  assign container_style = container_style | append: '--joeve-picker-border: ' | append: block.settings.picker_selected_border | append: ';'
+  assign container_style = container_style | append: '--joeve-picker-idle: ' | append: block.settings.picker_idle_bg | append: ';'
+  assign container_style = container_style | append: '--joeve-picker-idle-border: ' | append: block.settings.picker_idle_border | append: ';'
+
+  if block.settings.inherit_color_scheme != true
+    assign container_class = container_class | append: ' color-' | append: block.settings.color_scheme
+  endif
+
+  # Padding
+  capture padding_attrs
+    render 'padding-attrs', context: block
+  endcapture
+  assign padding_attrs = padding_attrs | split: 'COMMA'
+  assign padding_class = padding_attrs[0] | strip
+  assign padding_style = padding_attrs[1] | strip
+  assign container_class = container_class | append: ' ' | append: padding_class
+  assign container_style = container_style | append: padding_style
+-%}
+
+{% capture content %}
+  {% unless product.has_only_default_variant %}
+    <style>
+  .joeve-variants {
+    --joeve-picker-text: #1a1a1a;
+  }
+
+  .joeve-variants .joeve-variants__option {
+    gap: 1rem;
+  }
+
+  .joeve-variants .joeve-variants__label {
+    font-size: 1.5rem;
+    line-height: 1.4;
+    letter-spacing: 0.02em;
+    color: var(--joeve-picker-text);
+  }
+
+  .joeve-variants .joeve-variants__values {
+    display: grid !important;
+    grid-template-columns: repeat(auto-fit, minmax(4.8rem, 1fr));
+    gap: var(--gap, 0.8rem);
+    width: 100%;
+    max-width: 44rem;
+  }
+
+  .joeve-variants .joeve-variants__values .xo-field-toggle,
+  .joeve-variants .joeve-variants__values .xo-field-toggle__text {
+    width: 100% !important;
+    min-width: 0 !important;
+  }
+
+  /* Toutes les tailles restent cliquables (vente possible même sans stock) : pas de barre ni de grisé */
+  .joeve-variants .xo-field-toggle__diagonal {
+    display: none !important;
+  }
+
+  .joeve-variants .xo-field-toggle,
+  .joeve-variants .xo-field-toggle:has(.xo-field-toggle__input[xo-disabled]),
+  .joeve-variants .xo-field-toggle:has(.xo-field-toggle__input[xo-unavailable]) {
+    pointer-events: auto !important;
+    cursor: pointer !important;
+  }
+
+  .joeve-variants .xo-field-toggle:has(.xo-field-toggle__input[xo-disabled]) .xo-field-toggle__text,
+  .joeve-variants .xo-field-toggle:has(.xo-field-toggle__input[xo-unavailable]) .xo-field-toggle__text {
+    opacity: 1 !important;
+  }
+
+  .joeve-variants .xo-field-toggle {
+    display: inline-flex !important;
+  }
+
+  .joeve-variants .xo-field-toggle__text {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    min-width: 6.5rem !important;
+    height: 3.6rem !important;
+    padding: 0 1rem !important;
+    border: 1px solid var(--joeve-picker-idle-border) !important;
+    border-radius: 0.8rem !important;
+    background: var(--joeve-picker-idle) !important;
+    color: var(--joeve-picker-text) !important;
+    font-size: 1.5rem !important;
+    line-height: 1 !important;
+    letter-spacing: 0.04em !important;
+    transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease !important;
+  }
+
+  .joeve-variants .xo-field-toggle:hover .xo-field-toggle__text {
+    border-color: var(--joeve-picker-border) !important;
+  }
+
+  .joeve-variants .xo-field-toggle__input:checked + .xo-field-toggle__text {
+    background: var(--joeve-picker-bg) !important;
+    border-color: var(--joeve-picker-border) !important;
+    color: var(--joeve-picker-selected-text) !important;
+  }
+
+  .joeve-variants .xo-field-toggle:focus-visible .xo-field-toggle__text {
+    outline: 2px solid var(--joeve-picker-border) !important;
+    outline-offset: 2px !important;
+  }
+
+
+  @media (max-width: 749px) {
+    .joeve-variants .xo-field-toggle__text {
+      min-width: 5.6rem !important;
+      height: 3.4rem !important;
+      padding: 0 0.6rem !important;
+    }
+  }
+    </style>
+    <xo-product-variants class="{{ container_class }}" style="{{ container_style }}" {{ block.shopify_attributes }}>
+      {% for option in product.options_with_values %}
+        {% liquid
+          assign condition = true
+          if block.settings.show_only_first_option
+            unless forloop.first
+              assign condition = false
+            endunless
+          endif
+        %}
+
+        {% if condition %}
+          {% capture variant_name %}
+            {%- if block.settings.enable_option_name -%}
+              <div class="{{ option_label_class }}">
+                {{ option.name }}: <span class="joeve-variants__selected" data-joeve-option="{{ option.name | escape }}">{{ option.selected_value }}</span>
+              </div>
+            {%- endif -%}
+          {% endcapture %}
+          {% capture variant_value %}
+            {% assign popover_name_suffix = block.id | append: '-' | append: option.name | append: '-' | append: product.id %}
+            {%- render 'product-variant-value', option: option, variants_list_style: 'buttons', option_value_class: option_value_class, option_value_style: option_value_style, enable_swatches: block.settings.enable_swatches, popover_name_suffix: popover_name_suffix, placement: 'bottom-right' -%}
+          {% endcapture %}
+          <div class="{{ inner_class }}">
+            {% content_for 'block', type: '_variant-label', id: 'static_variant_name', content: variant_name, cls: 'flxs:0' %}
+            {% content_for 'block', type: '_variant-values', id: 'static_variant_value', content: variant_value %}
+          </div>
+        {% endif %}
+      {% endfor %}
+    </xo-product-variants>
+  {% endunless %}
+{% endcapture %}
+
+{% render 'animate', cascade: true, content: content, context: block %}
+
+
+
+{% javascript %}
+  // Met à jour « Size: XS » dès qu'on clique sur une taille.
+  document.addEventListener('change', (event) => {
+    const input = event.target;
+    if (!input.matches || !input.matches('.joeve-variants .xo-field-toggle__input')) return;
+    const container = input.closest('.joeve-variants');
+    const label = container && container.querySelector(
+      '.joeve-variants__selected[data-joeve-option="' + CSS.escape(input.name) + '"]'
+    );
+    if (label) label.textContent = input.getAttribute('xo-label') || input.value;
+  });
+{% endjavascript %}
+
+{% schema %}
+{
+  "name": "t:name.block_variant_picker",
+  "tag": null,
+  "settings": [
+    {
+      "type": "product",
+      "id": "product",
+      "label": "t:settings.product"
+    },
+    {
+      "type": "select",
+      "id": "variant",
+      "label": "t:settings.style",
+      "options": [
+        { "value": "dropdowns", "label": "t:options.dropdowns" },
+        { "value": "buttons", "label": "t:options.buttons" }
+      ],
+      "default": "buttons"
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_swatches",
+      "label": "t:settings.swatches",
+      "default": false
+    },
+    {
+      "type": "select",
+      "id": "direction",
+      "label": "t:settings.direction",
+      "options": [
+        { "value": "horizontal", "label": "t:options.horizontal" },
+        { "value": "vertical", "label": "t:options.vertical" }
+      ],
+      "default": "vertical"
+    },
+    {
+      "type": "text_alignment",
+      "id": "alignment",
+      "label": "t:settings.alignment",
+      "default": "left"
+    },
+    {
+      "type": "header",
+      "content": "Couleurs des tailles"
+    },
+    {
+      "type": "color",
+      "id": "picker_selected_bg",
+      "label": "Fond de la taille sélectionnée",
+      "default": "#1A1A1A"
+    },
+    {
+      "type": "color",
+      "id": "picker_selected_text",
+      "label": "Texte de la taille sélectionnée",
+      "default": "#FFFFFF"
+    },
+    {
+      "type": "color",
+      "id": "picker_selected_border",
+      "label": "Bordure de la taille sélectionnée",
+      "default": "#1A1A1A"
+    },
+    {
+      "type": "color",
+      "id": "picker_idle_bg",
+      "label": "Fond des autres tailles",
+      "default": "#FFFFFF"
+    },
+    {
+      "type": "color",
+      "id": "picker_idle_border",
+      "label": "Bordure des autres tailles",
+      "default": "#D6CFC4"
+    },
+    {
+      "type": "checkbox",
+      "id": "inherit_color_scheme",
+      "label": "t:settings.inherit_color_scheme",
+      "default": true
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "t:settings.color_scheme",
+      "default": "scheme-1",
+      "visible_if": "{{ block.settings.inherit_color_scheme == false }}"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_only_first_option",
+      "label": "t:settings.show_only_first_option",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_option_name",
+      "label": "t:settings.enable_option_name",
+      "default": true
+    },
+    {
+      "type": "range",
+      "id": "option_spacing",
+      "label": "t:settings.option_spacing",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 20
+    },
+    {
+      "type": "range",
+      "id": "option_value_spacing",
+      "label": "t:settings.option_value_spacing",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 8
+    },
+    {
+      "type": "header",
+      "content": "t:content.padding"
+    },
+    {
+      "type": "select",
+      "id": "device_padding",
+      "label": "t:settings.device",
+      "default": "desktop",
+      "options": [
+        { "value": "desktop", "label": "t:options.desktop" },
+        { "value": "mobile", "label": "t:options.mobile" }
+      ]
+    },
+    {
+      "type": "checkbox",
+      "id": "inherit_desktop_padding",
+      "label": "t:settings.inherit_desktop_value",
+      "default": true,
+      "visible_if": "{{ block.settings.device_padding == 'mobile' }}"
+    },
+    {
+      "type": "range", "label": "t:settings.top", "min": 0, "max": 100, "step": 1, "unit": "px", "default": 0,
+      "id": "top_padding_desktop",
+      "visible_if": "{{ block.settings.device_padding == 'desktop' }}"
+    },
+    {
+      "type": "range", "label": "t:settings.top", "min": 0, "max": 100, "step": 1, "unit": "px", "default": 0,
+      "id": "top_padding_mobile",
+      "visible_if": "{{ block.settings.inherit_desktop_padding == false and block.settings.device_padding == 'mobile' }}"
+    },
+    {
+      "type": "range", "label": "t:settings.bottom", "min": 0, "max": 100, "step": 1, "unit": "px", "default": 0,
+      "id": "bottom_padding_desktop",
+      "visible_if": "{{ block.settings.device_padding == 'desktop' }}"
+    },
+    {
+      "type": "range", "label": "t:settings.bottom", "min": 0, "max": 100, "step": 1, "unit": "px", "default": 0,
+      "id": "bottom_padding_mobile",
+      "visible_if": "{{ block.settings.inherit_desktop_padding == false and block.settings.device_padding == 'mobile' }}"
+    },
+    {
+      "type": "range", "label": "t:settings.left", "min": 0, "max": 100, "step": 1, "unit": "px", "default": 0,
+      "id": "left_padding_desktop",
+      "visible_if": "{{ block.settings.device_padding == 'desktop' }}"
+    },
+    {
+      "type": "range", "label": "t:settings.left", "min": 0, "max": 100, "step": 1, "unit": "px", "default": 0,
+      "id": "left_padding_mobile",
+      "visible_if": "{{ block.settings.inherit_desktop_padding == false and block.settings.device_padding == 'mobile' }}"
+    },
+    {
+      "type": "range", "label": "t:settings.right", "min": 0, "max": 100, "step": 1, "unit": "px", "default": 0,
+      "id": "right_padding_desktop",
+      "visible_if": "{{ block.settings.device_padding == 'desktop' }}"
+    },
+    {
+      "type": "range", "label": "t:settings.right", "min": 0, "max": 100, "step": 1, "unit": "px", "default": 0,
+      "id": "right_padding_mobile",
+      "visible_if": "{{ block.settings.inherit_desktop_padding == false and block.settings.device_padding == 'mobile' }}"
+    }
+  ],
+  "blocks": [],
+  "presets": [
+    {
+      "name": "t:name.block_variant_picker",
+      "category": "Product",
+      "settings": {
+        "product": "{{ closest.product }}"
+      },
+      "blocks": {
+        "static_variant_name": {
+          "name": "Label",
+          "type": "_variant-label",
+          "static": true,
+          "settings": {}
+        },
+        "static_variant_value": {
+          "name": "Values",
+          "type": "_variant-values",
+          "static": true,
+          "settings": {}
+        }
+      }
+    }
+  ]
+}
+{% endschema %}
