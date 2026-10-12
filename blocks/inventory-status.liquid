@@ -1,0 +1,308 @@
+{%- liquid
+  assign container_class = 'jof-delivery'
+  assign container_style = ''
+
+  capture padding_attrs
+    render 'padding-attrs', context: block
+  endcapture
+  assign padding_attrs = padding_attrs | split: 'COMMA'
+  assign padding_class = padding_attrs[0] | strip
+  assign padding_style = padding_attrs[1] | strip
+  assign container_class = container_class | append: ' ' | append: padding_class
+  assign container_style = container_style | append: padding_style
+
+  assign min_days = block.settings.delivery_min_days
+  assign max_days = block.settings.delivery_max_days
+  if max_days < min_days
+    assign max_days = min_days
+  endif
+
+  # Dates calculées côté serveur (affichées si le JavaScript ne tourne pas).
+  # Le script plus bas les recalcule avec la date du jour du visiteur.
+  assign fr_days = 'lundi,mardi,mercredi,jeudi,vendredi,samedi,dimanche' | split: ','
+  assign fr_months = 'janvier,février,mars,avril,mai,juin,juillet,août,septembre,octobre,novembre,décembre' | split: ','
+  assign now_ts = 'now' | date: '%s' | plus: 0
+
+  assign labels = ''
+  for target in (1..2)
+    if target == 1
+      assign wanted = min_days
+    else
+      assign wanted = max_days
+    endif
+    assign ts = now_ts
+    if block.settings.business_days
+      assign counted = 0
+      for i in (1..40)
+        if counted >= wanted
+          break
+        endif
+        assign ts = ts | plus: 86400
+        assign weekday = ts | date: '%u' | plus: 0
+        if weekday < 6
+          assign counted = counted | plus: 1
+        endif
+      endfor
+    else
+      assign ts = wanted | times: 86400 | plus: ts
+    endif
+    assign weekday_index = ts | date: '%u' | minus: 1
+    assign month_index = ts | date: '%m' | plus: 0 | minus: 1
+    assign day_number = ts | date: '%e' | strip
+    assign label = fr_days[weekday_index] | append: ' ' | append: day_number | append: ' ' | append: fr_months[month_index]
+    assign labels = labels | append: label | append: '|'
+  endfor
+  assign labels = labels | split: '|'
+-%}
+
+{% capture content %}
+  <style>
+    .jof-delivery__row {
+      display: flex;
+      align-items: center;
+      gap: 1.2rem;
+      font-size: 1.6rem;
+      line-height: 1.4;
+      color: {{ block.settings.text_color }};
+    }
+
+    .jof-delivery__dot {
+      flex-shrink: 0;
+      width: 1.2rem;
+      height: 1.2rem;
+      border-radius: 50%;
+      background: {{ block.settings.dot_color }};
+    }
+  </style>
+  <div class="jof-delivery__row">
+    <span class="jof-delivery__dot" aria-hidden="true"></span>
+    <span
+      data-jof-delivery
+      data-min="{{ min_days }}"
+      data-max="{{ max_days }}"
+      data-business="{{ block.settings.business_days }}"
+      data-prefix="{{ block.settings.text_prefix | escape }}"
+    >
+      {{- block.settings.text_prefix }} {{ labels[0] }} et {{ labels[1] -}}
+    </span>
+  </div>
+{% endcapture %}
+
+<div class="{{ container_class }}" style="{{ container_style }}" {{ block.shopify_attributes }}>
+  {% render 'animate', cascade: true, context: block, content: content %}
+</div>
+
+<script>
+  (function () {
+    function addDays(start, count, business) {
+      var date = new Date(start);
+      if (!business) {
+        date.setDate(date.getDate() + count);
+        return date;
+      }
+      var added = 0;
+      while (added < count) {
+        date.setDate(date.getDate() + 1);
+        var day = date.getDay();
+        if (day !== 0 && day !== 6) added++;
+      }
+      return date;
+    }
+
+    function format(date) {
+      return date.toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long' });
+    }
+
+    document.querySelectorAll('[data-jof-delivery]').forEach(function (el) {
+      var today = new Date();
+      var business = el.dataset.business === 'true';
+      var from = addDays(today, parseInt(el.dataset.min, 10), business);
+      var to = addDays(today, parseInt(el.dataset.max, 10), business);
+      el.textContent = el.dataset.prefix + ' ' + format(from) + ' et ' + format(to);
+    });
+  })();
+</script>
+
+{% schema %}
+{
+  "name": "t:name.block_inventory_status",
+  "tag": null,
+  "settings": [
+    {
+      "type": "product",
+      "id": "product",
+      "label": "t:settings.product"
+    },
+    {
+      "type": "header",
+      "content": "Livraison"
+    },
+    {
+      "type": "text",
+      "id": "text_prefix",
+      "label": "Texte avant les dates",
+      "default": "En stock : livré chez vous entre"
+    },
+    {
+      "type": "range",
+      "id": "delivery_min_days",
+      "label": "Livraison au plus tôt (jours)",
+      "min": 0,
+      "max": 20,
+      "step": 1,
+      "default": 5
+    },
+    {
+      "type": "range",
+      "id": "delivery_max_days",
+      "label": "Livraison au plus tard (jours)",
+      "min": 0,
+      "max": 20,
+      "step": 1,
+      "default": 8
+    },
+    {
+      "type": "checkbox",
+      "id": "business_days",
+      "label": "Compter seulement les jours ouvrés (sans samedi ni dimanche)",
+      "default": false
+    },
+    {
+      "type": "header",
+      "content": "t:content.appearance"
+    },
+    {
+      "type": "color",
+      "id": "dot_color",
+      "label": "Couleur du point",
+      "default": "#3DD068"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Couleur du texte",
+      "default": "#1A1A1A"
+    },
+    {
+      "type": "header",
+      "content": "t:content.animation"
+    },
+    {
+      "type": "select",
+      "id": "animate_type",
+      "label": "t:settings.type",
+      "options": [
+        { "value": "global", "label": "t:options.global" },
+        { "value": "custom", "label": "t:options.custom" },
+        { "value": "none", "label": "t:options.none" }
+      ],
+      "default": "global",
+      "info": "t:info.edit_presets_in_theme_settingseditorcontextthemecategoryanimation"
+    },
+    {
+      "type": "select",
+      "id": "animate_effect",
+      "label": "t:settings.effect",
+      "options": [
+        { "value": "fade", "label": "t:options.fade" },
+        { "value": "fade-up", "label": "t:options.fade_up" },
+        { "value": "fade-down", "label": "t:options.fade_down" },
+        { "value": "fade-left", "label": "t:options.fade_left" },
+        { "value": "fade-right", "label": "t:options.fade_right" },
+        { "value": "zoom-in", "label": "t:options.zoom_in" },
+        { "value": "zoom-out", "label": "t:options.zoom_out" },
+        { "value": "rotate-left-up", "label": "t:options.rotate_left_up" },
+        { "value": "rotate-right-up", "label": "t:options.rotate_right_up" },
+        { "value": "snake-up", "label": "t:options.snake_up" },
+        { "value": "snake-down", "label": "t:options.snake_down" },
+        { "value": "snake-left", "label": "t:options.snake_left" },
+        { "value": "snake-right", "label": "t:options.snake_right" },
+        { "value": "3d-up", "label": "t:options.3d_up" }
+      ],
+      "default": "fade-up",
+      "visible_if": "{{ block.settings.animate_type == 'custom' }}"
+    },
+    {
+      "type": "range",
+      "id": "animate_duration",
+      "label": "t:settings.duration",
+      "min": 300,
+      "max": 4000,
+      "step": 100,
+      "default": 500,
+      "unit": "ms",
+      "visible_if": "{{ block.settings.animate_type == 'custom' }}"
+    },
+    {
+      "type": "header",
+      "content": "t:content.padding"
+    },
+    {
+      "type": "select",
+      "id": "device_padding",
+      "label": "t:settings.device",
+      "default": "desktop",
+      "options": [
+        { "value": "desktop", "label": "t:options.desktop" },
+        { "value": "mobile", "label": "t:options.mobile" }
+      ]
+    },
+    {
+      "type": "checkbox",
+      "id": "inherit_desktop_padding",
+      "label": "t:settings.inherit_desktop_value",
+      "default": true,
+      "visible_if": "{{ block.settings.device_padding == 'mobile' }}"
+    },
+    {
+      "type": "range", "label": "t:settings.top", "min": 0, "max": 100, "step": 1, "unit": "px", "default": 0,
+      "id": "top_padding_desktop",
+      "visible_if": "{{ block.settings.device_padding == 'desktop' }}"
+    },
+    {
+      "type": "range", "label": "t:settings.top", "min": 0, "max": 100, "step": 1, "unit": "px", "default": 0,
+      "id": "top_padding_mobile",
+      "visible_if": "{{ block.settings.inherit_desktop_padding == false and block.settings.device_padding == 'mobile' }}"
+    },
+    {
+      "type": "range", "label": "t:settings.bottom", "min": 0, "max": 100, "step": 1, "unit": "px", "default": 0,
+      "id": "bottom_padding_desktop",
+      "visible_if": "{{ block.settings.device_padding == 'desktop' }}"
+    },
+    {
+      "type": "range", "label": "t:settings.bottom", "min": 0, "max": 100, "step": 1, "unit": "px", "default": 0,
+      "id": "bottom_padding_mobile",
+      "visible_if": "{{ block.settings.inherit_desktop_padding == false and block.settings.device_padding == 'mobile' }}"
+    },
+    {
+      "type": "range", "label": "t:settings.left", "min": 0, "max": 100, "step": 1, "unit": "px", "default": 0,
+      "id": "left_padding_desktop",
+      "visible_if": "{{ block.settings.device_padding == 'desktop' }}"
+    },
+    {
+      "type": "range", "label": "t:settings.left", "min": 0, "max": 100, "step": 1, "unit": "px", "default": 0,
+      "id": "left_padding_mobile",
+      "visible_if": "{{ block.settings.inherit_desktop_padding == false and block.settings.device_padding == 'mobile' }}"
+    },
+    {
+      "type": "range", "label": "t:settings.right", "min": 0, "max": 100, "step": 1, "unit": "px", "default": 0,
+      "id": "right_padding_desktop",
+      "visible_if": "{{ block.settings.device_padding == 'desktop' }}"
+    },
+    {
+      "type": "range", "label": "t:settings.right", "min": 0, "max": 100, "step": 1, "unit": "px", "default": 0,
+      "id": "right_padding_mobile",
+      "visible_if": "{{ block.settings.inherit_desktop_padding == false and block.settings.device_padding == 'mobile' }}"
+    }
+  ],
+  "presets": [
+    {
+      "name": "t:name.block_inventory_status",
+      "category": "Product",
+      "settings": {
+        "product": "{{ closest.product }}"
+      }
+    }
+  ]
+}
+{% endschema %}
