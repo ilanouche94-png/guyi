@@ -1,0 +1,35 @@
+{
+  "joeve": {
+    "cart": {
+      "title": {
+        "zero": "السلة · {{ count }} منتج",
+        "one": "السلة · {{ count }} منتج",
+        "two": "السلة · {{ count }} منتج",
+        "few": "السلة · {{ count }} منتج",
+        "many": "السلة · {{ count }} منتج",
+        "other": "السلة · {{ count }} منتج"
+      },
+      "free_shipping_remaining_html": "تبقّى <strong>{{ amount }}</strong> للحصول على شحن مجاني",
+      "free_shipping_reached_html": "خبر سار: <strong>الشحن مجاني</strong>",
+      "gift_remaining_html": "<strong>خصم {{ gift }}</strong> عند الشراء بقيمة {{ threshold }} · تبقّى <strong>{{ amount }}</strong>",
+      "gift_reached_html": "<strong>تم تطبيق خصم {{ gift }}</strong> على طلبك ✓",
+      "complete_look": "أكملي إطلالتك",
+      "add": "أضيفي",
+      "savings": "توفيرك",
+      "shipping": "الشحن",
+      "tracked": "(مع التتبع)",
+      "free": "مجاني",
+      "total": "الإجمالي",
+      "checkout": "إتمام الطلب",
+      "delivered_between": "يصل بين [from] و[to]",
+      "payment_note": "دفع آمن بالدولار الأمريكي (USD)، يحوّله البنك الخاص بك",
+      "returns_note": "إرجاع خلال 30 يومًا · دفع آمن"
+    },
+    "delivery": {
+      "in_stock_between": "متوفر: يصل بين [from] و[to]"
+    },
+    "price": {
+      "sale_badge": "عرض الخريف (-{{ off }}%) - حتى نفاد الكمية"
+    }
+  }
+}

@@ -1,0 +1,31 @@
+{
+  "joeve": {
+    "cart": {
+      "title": {
+        "one": "Winkelwagen · {{ count }} artikel",
+        "other": "Winkelwagen · {{ count }} artikelen"
+      },
+      "free_shipping_remaining_html": "Nog <strong>{{ amount }}</strong> tot gratis verzending",
+      "free_shipping_reached_html": "Goed nieuws: <strong>verzending is gratis</strong>",
+      "gift_remaining_html": "<strong>{{ gift }} korting</strong> vanaf {{ threshold }} · nog <strong>{{ amount }}</strong>",
+      "gift_reached_html": "<strong>{{ gift }} korting</strong> toegepast op je bestelling ✓",
+      "complete_look": "Maak je look compleet",
+      "add": "Toevoegen",
+      "savings": "Je besparing",
+      "shipping": "Verzending",
+      "tracked": "(met track & trace)",
+      "free": "Gratis",
+      "total": "Totaal",
+      "checkout": "Afrekenen",
+      "delivered_between": "Geleverd tussen [from] en [to]",
+      "payment_note": "Veilig betalen in dollars (USD), omgerekend door je bank",
+      "returns_note": "30 dagen retour · Veilig betalen"
+    },
+    "delivery": {
+      "in_stock_between": "Op voorraad: geleverd tussen [from] en [to]"
+    },
+    "price": {
+      "sale_badge": "HERFSTAANBIEDING (-{{ off }}%) - Zolang de voorraad strekt"
+    }
+  }
+}

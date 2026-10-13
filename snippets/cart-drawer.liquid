@@ -23,16 +23,10 @@
   if gift_progress > 100
     assign gift_progress = 100
   endif
-
-  if cart.item_count > 1
-    assign count_label = cart.item_count | append: ' articles'
-  else
-    assign count_label = cart.item_count | append: ' article'
-  endif
 -%}
 
 {% capture title %}
-  <xo-cart-will-change xo-unique-id="joeve-cart-title"><span>Panier · {{ count_label }}</span></xo-cart-will-change>
+  <xo-cart-will-change xo-unique-id="joeve-cart-title"><span>{{ 'joeve.cart.title' | t: count: cart.item_count }}</span></xo-cart-will-change>
 {% endcapture %}
 
 {% capture drawer_content %}
@@ -41,9 +35,10 @@
       <div class="joeve-cart-ship">
         <p class="joeve-cart-ship__text">
           {%- if remaining > 0 -%}
-            Plus que <strong><span class="money">{{ remaining | money }}</span></strong> pour profiter de la livraison offerte
+            {%- capture amount_html -%}<span class="money">{{ remaining | money }}</span>{%- endcapture -%}
+            {{ 'joeve.cart.free_shipping_remaining_html' | t: amount: amount_html }}
           {%- else -%}
-            Bonne nouvelle : la <strong>livraison est offerte</strong>
+            {{ 'joeve.cart.free_shipping_reached_html' | t }}
           {%- endif -%}
         </p>
         <span class="joeve-cart-ship__bar"><span style="width: {{ progress }}%;"></span></span>
@@ -62,10 +57,13 @@
         </svg>
         <div class="joeve-cart-gift__body">
           <p class="joeve-cart-gift__text">
+            {%- capture gift_html -%}<span class="money">{{ joeve_gift_amount | money_without_trailing_zeros }}</span>{%- endcapture -%}
             {%- if gift_remaining > 0 -%}
-              <strong><span class="money">{{ joeve_gift_amount | money_without_trailing_zeros }}</span> offerts</strong> dès <span class="money">{{ joeve_gift_from | money_without_trailing_zeros }}</span> d'achat · plus que <strong><span class="money">{{ gift_remaining | money }}</span></strong>
+              {%- capture threshold_html -%}<span class="money">{{ joeve_gift_from | money_without_trailing_zeros }}</span>{%- endcapture -%}
+              {%- capture amount_html -%}<span class="money">{{ gift_remaining | money }}</span>{%- endcapture -%}
+              {{ 'joeve.cart.gift_remaining_html' | t: gift: gift_html, threshold: threshold_html, amount: amount_html }}
             {%- else -%}
-              <strong><span class="money">{{ joeve_gift_amount | money_without_trailing_zeros }}</span> offerts</strong> appliqués à votre commande ✓
+              {{ 'joeve.cart.gift_reached_html' | t: gift: gift_html }}
             {%- endif -%}
           </p>
           {%- if gift_remaining > 0 -%}

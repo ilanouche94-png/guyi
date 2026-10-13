@@ -18,9 +18,8 @@
   endif
 
   # Dates calculées côté serveur (affichées si le JavaScript ne tourne pas).
-  # Le script plus bas les recalcule avec la date du jour du visiteur.
-  assign fr_days = 'lundi,mardi,mercredi,jeudi,vendredi,samedi,dimanche' | split: ','
-  assign fr_months = 'janvier,février,mars,avril,mai,juin,juillet,août,septembre,octobre,novembre,décembre' | split: ','
+  # Le script plus bas les recalcule avec la date du jour et la langue du visiteur.
+  # Texte traduisible : locales/*.json > joeve.delivery.in_stock_between
   assign now_ts = 'now' | date: '%s' | plus: 0
 
   assign labels = ''
@@ -46,13 +45,12 @@
     else
       assign ts = wanted | times: 86400 | plus: ts
     endif
-    assign weekday_index = ts | date: '%u' | minus: 1
-    assign month_index = ts | date: '%m' | plus: 0 | minus: 1
-    assign day_number = ts | date: '%e' | strip
-    assign label = fr_days[weekday_index] | append: ' ' | append: day_number | append: ' ' | append: fr_months[month_index]
+    assign label = ts | date: '%A %-d %B'
     assign labels = labels | append: label | append: '|'
   endfor
   assign labels = labels | split: '|'
+  assign delivery_template = 'joeve.delivery.in_stock_between' | t
+  assign delivery_text = delivery_template | replace: '[from]', labels[0] | replace: '[to]', labels[1]
 -%}
 
 {% capture content %}
@@ -81,9 +79,10 @@
       data-min="{{ min_days }}"
       data-max="{{ max_days }}"
       data-business="{{ block.settings.count_business_days }}"
-      data-prefix="{{ block.settings.text_prefix | escape }}"
+      data-template="{{ delivery_template | escape }}"
+      data-locale="{{ request.locale.iso_code }}"
     >
-      {{- block.settings.text_prefix }} {{ labels[0] }} et {{ labels[1] -}}
+      {{- delivery_text -}}
     </span>
   </div>
 {% endcapture %}
@@ -174,7 +173,7 @@
   <div id="{{ sticky_id }}" class="jof-sticky">
     <div class="jof-sticky__band">
       <span class="jof-sticky__dot" aria-hidden="true"></span>
-      <span class="jof-sticky__text">{{- block.settings.text_prefix }} {{ labels[0] }} et {{ labels[1] -}}</span>
+      <span class="jof-sticky__text">{{- delivery_text -}}</span>
     </div>
     <div class="jof-sticky__inner">
       <button type="button" class="jof-sticky__button" data-sold-out="{{ 'products.product.sold_out' | t | escape }}">{{ 'products.product.add_to_cart' | t }}</button>
@@ -270,8 +269,8 @@
       return date;
     }
 
-    function format(date) {
-      return date.toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long' });
+    function format(date, locale) {
+      return date.toLocaleDateString(locale || 'en', { weekday: 'long', day: 'numeric', month: 'long' });
     }
 
     document.querySelectorAll('[data-jof-delivery]').forEach(function (el) {
@@ -279,7 +278,8 @@
       var business = el.dataset.business === 'true';
       var from = addDays(today, parseInt(el.dataset.min, 10), business);
       var to = addDays(today, parseInt(el.dataset.max, 10), business);
-      el.textContent = el.dataset.prefix + ' ' + format(from) + ' et ' + format(to);
+      var template = el.dataset.template || '[from] – [to]';
+      el.textContent = template.replace('[from]', format(from, el.dataset.locale)).replace('[to]', format(to, el.dataset.locale));
     });
   })();
 </script>
@@ -299,10 +299,8 @@
       "content": "Livraison"
     },
     {
-      "type": "text",
-      "id": "text_prefix",
-      "label": "Texte avant les dates",
-      "default": "En stock : livré chez vous entre"
+      "type": "paragraph",
+      "content": "Le texte « En stock : livré chez vous entre … » se traduit dans Boutique en ligne > Thèmes > … > Modifier le contenu par défaut (clé joeve.delivery.in_stock_between) ou dans Translate & Adapt."
     },
     {
       "type": "range",

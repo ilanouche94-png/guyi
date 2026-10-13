@@ -58,7 +58,7 @@
               </select>
             {%- endunless -%}
             <xo-cart-add class="joeve-reco__add" xo-product-id="{{ p.first_available_variant.id }}" xo-cart-opened="false">
-              <button type="button">Ajouter</button>
+              <button type="button">{{ 'joeve.cart.add' | t }}</button>
             </xo-cart-add>
           </div>
         </div>
@@ -68,7 +68,7 @@
 
   {%- if shown > 0 -%}
     <div class="joeve-recos">
-      <h4 class="joeve-recos__title">Complétez votre look</h4>
+      <h4 class="joeve-recos__title">{{ 'joeve.cart.complete_look' | t }}</h4>
       <div class="joeve-recos__track">{{ cards }}</div>
     </div>
   {%- endif -%}

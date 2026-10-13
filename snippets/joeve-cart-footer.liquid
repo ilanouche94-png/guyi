@@ -36,28 +36,30 @@
     {%- if cart != empty -%}
       {%- if savings > 0 -%}
         <div class="joeve-cart-footer__savings">
-          <span>Vos économies</span>
+          <span>{{ 'joeve.cart.savings' | t }}</span>
           <span class="joeve-cart-footer__savings-amount">-<span class="money">{{ savings | money }}</span></span>
         </div>
       {%- endif -%}
 
       <div class="joeve-cart-footer__row">
         <span>
-          Livraison <small>(suivie)</small>
+          {{ 'joeve.cart.shipping' | t }} <small>{{ 'joeve.cart.tracked' | t }}</small>
           <joeve-ship-dates
             class="joeve-cart-footer__dates"
             data-min="{{ joeve_ship_min_days }}"
             data-max="{{ joeve_ship_max_days }}"
             data-business="true"
+            data-template="{{ 'joeve.cart.delivered_between' | t | escape }}"
+            data-locale="{{ request.locale.iso_code }}"
           ></joeve-ship-dates>
         </span>
         <span class="joeve-cart-footer__ship-price">
-          {%- if shipping == 0 -%}Offerte{%- else -%}<joeve-flat-price data-value="{{ shipping | divided_by: 100.0 }}">{{ shipping | money }}</joeve-flat-price>{%- endif -%}
+          {%- if shipping == 0 -%}{{ 'joeve.cart.free' | t }}{%- else -%}<joeve-flat-price data-value="{{ shipping | divided_by: 100.0 }}">{{ shipping | money }}</joeve-flat-price>{%- endif -%}
         </span>
       </div>
 
       <div class="joeve-cart-footer__row joeve-cart-footer__row--total">
-        <span>Total</span>
+        <span>{{ 'joeve.cart.total' | t }}</span>
         <strong><span class="money">{{ grand_total | money }}</span></strong>
       </div>
 
@@ -70,7 +72,7 @@
   <div class="joeve-cart-footer__static">
     <form action="{{ routes.cart_url }}" method="post" class="joeve-cart-footer__form">
       <button type="submit" name="checkout" class="joeve-cart-footer__checkout">
-        <span>Commander</span>
+        <span>{{ 'joeve.cart.checkout' | t }}</span>
       </button>
     </form>
 
@@ -115,7 +117,7 @@
       }
     </script>
 
-    <p class="joeve-cart-footer__note">Paiement sécurisé en dollars (USD), converti par votre banque</p>
-    <p class="joeve-cart-footer__note">Retours sous 30 jours · Paiement sécurisé</p>
+    <p class="joeve-cart-footer__note">{{ 'joeve.cart.payment_note' | t }}</p>
+    <p class="joeve-cart-footer__note">{{ 'joeve.cart.returns_note' | t }}</p>
   </div>
 </div>

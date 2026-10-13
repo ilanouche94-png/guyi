@@ -1,0 +1,31 @@
+{
+  "joeve": {
+    "cart": {
+      "title": {
+        "one": "Panier · {{ count }} article",
+        "other": "Panier · {{ count }} articles"
+      },
+      "free_shipping_remaining_html": "Plus que <strong>{{ amount }}</strong> pour profiter de la livraison offerte",
+      "free_shipping_reached_html": "Bonne nouvelle : la <strong>livraison est offerte</strong>",
+      "gift_remaining_html": "<strong>{{ gift }} offerts</strong> dès {{ threshold }} d'achat · plus que <strong>{{ amount }}</strong>",
+      "gift_reached_html": "<strong>{{ gift }} offerts</strong> appliqués à votre commande ✓",
+      "complete_look": "Complétez votre look",
+      "add": "Ajouter",
+      "savings": "Vos économies",
+      "shipping": "Livraison",
+      "tracked": "(suivie)",
+      "free": "Offerte",
+      "total": "Total",
+      "checkout": "Commander",
+      "delivered_between": "Livrée entre [from] et [to]",
+      "payment_note": "Paiement sécurisé en dollars (USD), converti par votre banque",
+      "returns_note": "Retours sous 30 jours · Paiement sécurisé"
+    },
+    "delivery": {
+      "in_stock_between": "En stock : livré chez vous entre [from] et [to]"
+    },
+    "price": {
+      "sale_badge": "OFFRE D'AUTOMNE (-{{ off }}%) - Jusqu’à épuisement des stocks"
+    }
+  }
+}

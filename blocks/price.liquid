@@ -1,0 +1,398 @@
+{%- liquid
+  assign container_class = 'xo-price-container pos:relative d:inline-flex|w ai:center fxw:wrap gp:var(--gap) d:none/xo-unavailable'
+  assign current_price_class = 'xo-price d:inline-block'
+  assign current_compare_at_price_class = 'xo-compare-at-price d:inline-block td:line-through'
+  assign container_style = ''
+  assign show_tax_info = block.settings.show_tax_info
+  assign tax_info_class = 'fz:s4 c:foreground.8 pt:s4'
+
+  if block.settings.width == 'fit'
+    assign container_class = container_class | append: ' w:fit-content'
+  elsif block.settings.width == 'fill'
+    assign container_class = container_class | append: ' w:100%'
+    case block.settings.alignment
+      when 'left'
+        assign container_class = container_class | append: ' jc:flex-start ta:left'
+      when 'center'
+        assign container_class = container_class | append: ' jc:center ta:center'
+      when 'right'
+        assign container_class = container_class | append: ' jc:flex-end ta:right'
+    endcase
+  endif
+  if block.settings.mobile_hidden
+    assign container_class = container_class | append: ' d:none!@+sm'
+  endif
+  if block.settings.type_preset == 'custom'
+    if block.settings.font != blank
+      assign container_class = container_class | append: ' ' | append: block.settings.font
+    endif
+    if block.settings.font_size != blank
+      assign container_class = container_class | append: ' ' | append: block.settings.font_size
+    endif
+    if block.settings.line_height != blank
+      assign container_class = container_class | append: ' ' | append: block.settings.line_height
+    endif
+    if block.settings.letter_spacing != blank
+      assign container_class = container_class | append: ' ' | append: block.settings.letter_spacing
+    endif
+    if block.settings.case != blank
+      assign container_class = container_class | append: ' ' | append: block.settings.case
+    endif
+    if block.settings.wrap != blank
+      assign container_class = container_class | append: ' ' | append: block.settings.wrap
+    endif
+    if block.settings.italic
+      assign container_class = container_class | append: ' fs:italic'
+    endif
+    if block.settings.weight != blank
+      assign container_class = container_class | append: ' ' | append: block.settings.weight
+    endif
+  else
+    assign container_class = container_class | append: ' ' | append: block.settings.type_preset
+  endif
+  if block.settings.type_preset != blank
+    capture color_attrs
+      render 'color-attrs', context: block
+    endcapture
+    assign color_attrs = color_attrs | split: 'COMMA'
+    assign color_class = color_attrs[0] | strip
+    assign color_style = color_attrs[1] | strip
+    assign container_class = container_class | append: ' ' | append: color_class
+    assign container_style = container_style | append: color_style
+  endif
+  if block.settings.line_clamp != 'none'
+    assign container_class = container_class | append: ' ' | append: block.settings.line_clamp
+  endif
+  if block.settings.background
+    if block.settings.background_color != blank
+      assign container_class = container_class | append: ' bgc:var(--bg-color)'
+      assign container_style = container_style | append: '--bg-color: ' | append: block.settings.background_color | append: ';'
+    endif
+    if block.settings.border_radius != blank
+      assign container_class = container_class | append: ' ' | append: block.settings.border_radius
+    endif
+  endif
+  if block.settings.inherit_color_scheme != true
+    assign container_class = container_class | append: ' color-' | append: block.settings.color_scheme
+  endif
+
+  assign container_style = container_style | append: '--gap: ' | append: block.settings.gap | append: 'px;'
+-%}
+
+{% comment %} Padding {% endcomment %}
+{%- liquid
+  capture padding_attrs
+    render 'padding-attrs', context: block
+  endcapture
+  assign padding_attrs = padding_attrs | split: 'COMMA'
+  assign padding_class = padding_attrs[0] | strip
+  assign padding_style = padding_attrs[1] | strip
+  assign container_class = container_class | append: ' ' | append: padding_class
+  assign container_style = container_style | append: padding_style
+-%}
+
+{%- liquid
+  assign product = block.settings.product
+  assign target = product.selected_or_first_available_variant
+
+  assign compare_at_price = target.compare_at_price
+  assign price = target.price | default: 1999
+  # Prix barré : page produit (produit principal), pages collection et page d'accueil
+  # Bandeau « OFFRE D'AUTOMNE » : uniquement sur le produit principal de la page produit
+  assign joeve_main_product = false
+  if template.name == 'product' and section.id contains 'main_product'
+    assign joeve_main_product = true
+  endif
+  unless joeve_main_product or template.name == 'collection' or template.name == 'index'
+    assign compare_at_price = 0
+  endunless
+  assign money_price = price | money
+  if settings.currency_code_enabled
+    assign money_price = price | money_with_currency
+  endif
+
+  if compare_at_price > price
+    assign price_text = 'products.product.price.sale_price' | t
+  else
+    assign price_text = 'products.product.price.regular_price' | t
+  endif
+
+  assign show_price_varies = true
+  if section.id contains 'main_product' or section.id contains 'featured_product'
+    assign show_price_varies = false
+  endif
+
+  if product.price_varies and show_price_varies
+    assign price_min = product.price_min | money
+    if settings.currency_code_enabled
+      assign price_min = product.price_min | money_with_currency
+    endif
+    assign money_price = 'products.product.price.from_price_html' | t: price: price_min
+  endif
+-%}
+
+{% capture price_content %}
+  <span class='{{ current_price_class }}' xo-binding='money_price' xo-price>
+    {{ money_price }}
+  </span>
+{% endcapture %}
+
+{% capture compare_at_price_content %}
+  {% if compare_at_price > price %}
+    {%- unless product.price_varies == false and product.compare_at_price_varies %}
+      {% assign regular_price_text = 'products.product.price.regular_price' | t %}
+      {% render 'visually-hidden', content: regular_price_text, inline: false %}
+      <span class='{{ current_compare_at_price_class }}' xo-binding='compare_at_price' xo-price>
+        {% if settings.currency_code_enabled %}
+          {{ compare_at_price | money_with_currency }}
+        {% else %}
+          {{ compare_at_price | money }}
+        {% endif %}
+      </span>
+    {%- endunless -%}
+  {% endif %}
+{% endcapture %}
+
+<style>
+  [xo-unique-id^="product-price-"] .xo-compare-at-price {
+    color: #8c1c16 !important;
+    opacity: 1 !important;
+  }
+
+  .joeve-sale-badge {
+    color: #8c1c16;
+    font-size: 1.3rem;
+    font-weight: 500;
+    letter-spacing: 0.04em;
+    line-height: 1.3;
+  }
+</style>
+<xo-product-will-change xo-unique-id="product-price-{{ section.id }}" xo-morph-selector="[xo-price]">
+  <div class="{{ container_class }}" style="{{ container_style }}" {{ block.shopify_attributes }}>
+    {% content_for 'block', type: '_price-item', id: 'static_price', content: price_content %}
+    {% content_for 'block', type: '_price-item', id: 'static_compare_at_price', content: compare_at_price_content %}
+
+    {%- comment -%} Bandeau promo : arrondi à -20 % ou -50 % {%- endcomment -%}
+    {%- if joeve_main_product and compare_at_price > price -%}
+      {%- assign joeve_off = compare_at_price | minus: price | times: 100 | divided_by: compare_at_price -%}
+      {%- if joeve_off >= 35 -%}{%- assign joeve_off = 50 -%}{%- else -%}{%- assign joeve_off = 20 -%}{%- endif -%}
+      <span class="joeve-sale-badge" xo-price>{{ 'joeve.price.sale_badge' | t: off: joeve_off }}</span>
+    {%- endif -%}
+
+    {% render 'visually-hidden', content: price_text, inline: false %}
+    {% render 'unit-price', product: product %}
+  </div>
+
+  {% if show_tax_info %}
+    <div class="{{ tax_info_class }}">
+      {%- if cart.duties_included and cart.taxes_included -%}
+        {{ 'products.product.price.duties_and_taxes_included' | t }}
+      {%- elsif cart.taxes_included -%}
+        {{ 'products.product.price.include_tax' | t }}
+      {%- elsif cart.duties_included -%}
+        {{ 'products.product.price.include_duties' | t }}
+      {%- endif -%}
+
+      {%- if shop.shipping_policy.body != blank -%}
+        {{ 'products.product.price.shipping_policy' | t }}
+      {%- endif -%}
+    </div>
+  {% endif %}
+</xo-product-will-change>
+
+
+{% schema %}
+{
+  "name": "t:name.block_price",
+  "tag": null,
+  "settings": [
+    {
+      "type": "product",
+      "id": "product",
+      "label": "t:settings.product"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_tax_info",
+      "label": "t:settings.tax_information",
+      "default": false
+    },
+    {
+      "type": "header",
+      "content": "t:content.layout"
+    },
+    {
+      "type": "select",
+      "id": "width",
+      "label": "t:settings.width",
+      "options": [
+        {
+          "value": "fit",
+          "label": "t:options.fit_content"
+        },
+        {
+          "value": "fill",
+          "label": "t:options.fill"
+        }
+      ],
+      "default": "fit"
+    },
+    {
+      "type": "text_alignment",
+      "id": "alignment",
+      "label": "t:settings.alignment",
+      "default": "left",
+      "visible_if": "{{ block.settings.width == 'fill' }}"
+    },
+    {
+      "type": "range",
+      "id": "gap",
+      "label": "t:settings.gap",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 5
+    },
+    {
+      "type": "header",
+      "content": "t:content.padding"
+    },
+    {
+      "type": "select",
+      "id": "device_padding",
+      "label": "t:settings.device",
+      "default": "desktop",
+      "options": [
+        {
+          "value": "desktop",
+          "label": "t:options.desktop"
+        },
+        {
+          "value": "mobile",
+          "label": "t:options.mobile"
+        }
+      ]
+    },
+    {
+      "type": "checkbox",
+      "id": "inherit_desktop_padding",
+      "label": "t:settings.inherit_desktop_value",
+      "default": true,
+      "visible_if": "{{ block.settings.device_padding == 'mobile' }}"
+    },
+    {
+      "type": "range",
+      "label": "t:settings.top",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 0,
+      "id": "top_padding_desktop",
+      "visible_if": "{{ block.settings.device_padding == 'desktop' }}"
+    },
+    {
+      "type": "range",
+      "label": "t:settings.top",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 0,
+      "id": "top_padding_mobile",
+      "visible_if": "{{ block.settings.inherit_desktop_padding == false and block.settings.device_padding == 'mobile' }}"
+    },
+    {
+      "type": "range",
+      "label": "t:settings.bottom",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 0,
+      "id": "bottom_padding_desktop",
+      "visible_if": "{{ block.settings.device_padding == 'desktop' }}"
+    },
+    {
+      "type": "range",
+      "label": "t:settings.bottom",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 0,
+      "id": "bottom_padding_mobile",
+      "visible_if": "{{ block.settings.inherit_desktop_padding == false and block.settings.device_padding == 'mobile' }}"
+    },
+    {
+      "type": "range",
+      "label": "t:settings.left",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 0,
+      "id": "left_padding_desktop",
+      "visible_if": "{{ block.settings.device_padding == 'desktop' }}"
+    },
+    {
+      "type": "range",
+      "label": "t:settings.left",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 0,
+      "id": "left_padding_mobile",
+      "visible_if": "{{ block.settings.inherit_desktop_padding == false and block.settings.device_padding == 'mobile' }}"
+    },
+    {
+      "type": "range",
+      "label": "t:settings.right",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 0,
+      "id": "right_padding_desktop",
+      "visible_if": "{{ block.settings.device_padding == 'desktop' }}"
+    },
+    {
+      "type": "range",
+      "label": "t:settings.right",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 0,
+      "id": "right_padding_mobile",
+      "visible_if": "{{ block.settings.inherit_desktop_padding == false and block.settings.device_padding == 'mobile' }}"
+    }
+  ],
+  "blocks": [],
+  "presets": [
+    {
+      "name": "t:name.block_price",
+      "category": "Product",
+      "settings": {
+        "product": "{{ closest.product }}"
+      },
+      "blocks": {
+        "static_price": {
+          "name": "Price",
+          "type": "_price-item",
+          "static": true,
+          "settings": {}
+        },
+        "static_compare_at_price": {
+          "name": "Compare at price",
+          "type": "_price-item",
+          "static": true,
+          "settings": {}
+        }
+      }
+    }
+  ]
+}
+{% endschema %}

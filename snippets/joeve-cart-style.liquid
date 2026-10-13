@@ -510,6 +510,7 @@
             var min = parseInt(this.dataset.min, 10) || 0;
             var max = parseInt(this.dataset.max, 10) || min;
             var business = this.dataset.business === 'true';
+            var locale = this.dataset.locale || document.documentElement.lang || 'en';
             var add = function (days) {
               var d = new Date();
               if (business) {
@@ -522,9 +523,10 @@
               } else {
                 d.setDate(d.getDate() + days);
               }
-              return d.toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long' });
+              return d.toLocaleDateString(locale, { weekday: 'long', day: 'numeric', month: 'long' });
             };
-            this.textContent = 'Livrée entre ' + add(min) + ' et ' + add(max);
+            var template = this.dataset.template || '[from] – [to]';
+            this.textContent = template.replace('[from]', add(min)).replace('[to]', add(max));
           }
         }
       );
