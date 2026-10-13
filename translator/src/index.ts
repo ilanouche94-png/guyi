@@ -22,9 +22,22 @@ async function validHmac(body: string, header: string | null, secret: string): P
 }
 
 export default {
-  async fetch(request: Request, env: Env, ctx: ExecutionContext): Promise<Response> {
+  async fetch(request: Request, rawEnv: Env, ctx: ExecutionContext): Promise<Response> {
+    // Adresse de la boutique par défaut (pour un Worker créé directement dans le site Cloudflare).
+    const env: Env = { ...rawEnv, SHOP_DOMAIN: rawEnv.SHOP_DOMAIN || "q0uptb-wj.myshopify.com" };
     if (request.method !== "POST") {
-      return new Response("Joeve translator OK", { status: 200 });
+      // Page de contrôle : indique quels réglages sont en place (sans jamais afficher leur valeur).
+      const check = (value?: string) => (value ? "OK" : "MANQUANT");
+      return new Response(
+        [
+          "Joeve translator",
+          `ANTHROPIC_API_KEY : ${check(env.ANTHROPIC_API_KEY)}`,
+          `SHOPIFY_CLIENT_ID : ${check(env.SHOPIFY_CLIENT_ID || env.SHOPIFY_ADMIN_TOKEN)}`,
+          `SHOPIFY_CLIENT_SECRET : ${check(env.SHOPIFY_CLIENT_SECRET || env.SHOPIFY_ADMIN_TOKEN)}`,
+          `SHOPIFY_WEBHOOK_SECRET : ${check(env.SHOPIFY_WEBHOOK_SECRET)}`,
+        ].join("\n"),
+        { status: 200, headers: { "Content-Type": "text/plain; charset=utf-8" } },
+      );
     }
 
     const body = await request.text();

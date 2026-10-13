@@ -25,17 +25,15 @@ les traductions dans la boutique, environ 30 secondes plus tard.
 2. Installe l'app sur la boutique Joeve Paris (bouton **Install** / **Stores**).
 3. Dans **Settings** de l'app, copie le **Client ID** et le **Client secret**.
 
-### 3. Mise en ligne sur Cloudflare (gratuit)
-Dans un terminal, dans ce dossier `translator/` :
-
-```bash
-npm install
-npx wrangler login                              # ouvre le navigateur, crée/connecte ton compte Cloudflare
-npx wrangler secret put ANTHROPIC_API_KEY       # colle la clé sk-ant-api03-...
-npx wrangler secret put SHOPIFY_CLIENT_ID       # colle le Client ID
-npx wrangler secret put SHOPIFY_CLIENT_SECRET   # colle le Client secret
-npx wrangler deploy                             # affiche l'adresse du programme, ex. https://joeve-translator.xxx.workers.dev
-```
+### 3. Mise en ligne sur Cloudflare (gratuit, sans terminal)
+1. Crée un compte sur https://dash.cloudflare.com (gratuit).
+2. **Workers & Pages** → **Create** → **Create Worker** (modèle « Hello World ») → nom : `joeve-translator` → **Deploy**.
+3. **Edit code** → efface tout le code, colle le contenu de `dist/worker.js` → **Deploy**.
+4. **Settings** → **Variables and Secrets** → **Add**, type **Secret**, une par une :
+   - `ANTHROPIC_API_KEY` = ta clé `sk-ant-api03-...`
+   - `SHOPIFY_CLIENT_ID` = le Client ID de l'app
+   - `SHOPIFY_CLIENT_SECRET` = le Client secret de l'app
+5. Ouvre l'adresse du Worker (ex. `https://joeve-translator.xxx.workers.dev`) : la page indique quels réglages sont OK ou MANQUANT.
 
 ### 4. Prévenir Shopify à chaque produit
 1. Admin Shopify → **Paramètres** → **Notifications** → tout en bas **Webhooks** → **Créer un webhook**.
