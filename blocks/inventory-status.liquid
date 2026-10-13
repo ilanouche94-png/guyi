@@ -177,7 +177,7 @@
       <span class="jof-sticky__text">{{- block.settings.text_prefix }} {{ labels[0] }} et {{ labels[1] -}}</span>
     </div>
     <div class="jof-sticky__inner">
-      <button type="button" class="jof-sticky__button">{{ 'products.product.add_to_cart' | t }}</button>
+      <button type="button" class="jof-sticky__button" data-sold-out="{{ 'products.product.sold_out' | t | escape }}">{{ 'products.product.add_to_cart' | t }}</button>
     </div>
   </div>
 
@@ -204,16 +204,24 @@
         return h && h.querySelector('xo-cart-add, .xo-add-to-cart');
       }
 
+      // Taille choisie épuisée (même repère que le sélecteur de tailles grisé)
+      function soldOut() {
+        var checked = section.querySelectorAll('.xo-field-toggle__input:checked, input[type="radio"]:checked');
+        for (var i = 0; i < checked.length; i++) {
+          if (checked[i].hasAttribute('xo-disabled') || checked[i].hasAttribute('xo-unavailable')) return true;
+        }
+        return false;
+      }
+
       function sync() {
         var h = holder();
         if (h && !h.classList.contains('jof-hide-mobile')) h.classList.add('jof-hide-mobile');
         var c = cart();
         if (c) {
-          var disabled = c.hasAttribute('xo-disabled');
+          var disabled = c.hasAttribute('xo-disabled') || soldOut();
           var label = '';
           if (disabled) {
-            var off = h.querySelector('[xo-unavailable-text]');
-            label = off ? off.getAttribute('xo-unavailable-text') : '';
+            label = button.getAttribute('data-sold-out');
           } else {
             var inner = c.querySelector('button, [aria-label]');
             label = (inner && inner.getAttribute('aria-label')) || c.textContent;
@@ -229,11 +237,13 @@
 
       button.addEventListener('click', function () {
         var c = cart();
-        if (!c || c.hasAttribute('xo-disabled')) return;
+        sync();
+        if (!c || button.disabled) return;
         (c.querySelector('button') || c).click();
       });
 
       sync();
+      section.addEventListener('change', function () { setTimeout(sync, 0); setTimeout(sync, 300); });
       var timer;
       new MutationObserver(function () {
         clearTimeout(timer);
