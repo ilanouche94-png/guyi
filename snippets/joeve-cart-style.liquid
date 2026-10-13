@@ -509,9 +509,19 @@
           connectedCallback() {
             var min = parseInt(this.dataset.min, 10) || 0;
             var max = parseInt(this.dataset.max, 10) || min;
+            var business = this.dataset.business === 'true';
             var add = function (days) {
               var d = new Date();
-              d.setDate(d.getDate() + days);
+              if (business) {
+                // Jours ouvrés : on ne compte ni le samedi ni le dimanche
+                var added = 0;
+                while (added < days) {
+                  d.setDate(d.getDate() + 1);
+                  if (d.getDay() !== 0 && d.getDay() !== 6) added++;
+                }
+              } else {
+                d.setDate(d.getDate() + days);
+              }
               return d.toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long' });
             };
             this.textContent = 'Livrée entre ' + add(min) + ' et ' + add(max);

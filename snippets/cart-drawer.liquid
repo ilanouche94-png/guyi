@@ -7,9 +7,17 @@
   assign joeve_free_from = 7000
   assign joeve_ship_min_days = 5
   assign joeve_ship_max_days = 8
+  assign joeve_gift_from = 13000
+  assign joeve_gift_amount = 1500
 
+  # Palier 1 : livraison offerte. Palier 2 : 15 € offerts (remise automatique Shopify).
   assign remaining = joeve_free_from | minus: cart.total_price
-  assign progress = cart.total_price | times: 100 | divided_by: joeve_free_from
+  assign gift_remaining = joeve_gift_from | minus: cart.items_subtotal_price
+  if remaining > 0
+    assign progress = cart.total_price | times: 100 | divided_by: joeve_free_from
+  else
+    assign progress = cart.items_subtotal_price | times: 100 | divided_by: joeve_gift_from
+  endif
   if progress > 100
     assign progress = 100
   endif
@@ -32,8 +40,10 @@
         <p class="joeve-cart-ship__text">
           {%- if remaining > 0 -%}
             Plus que <strong>{{ remaining | money }}</strong> pour profiter de la livraison offerte
+          {%- elsif gift_remaining > 0 -%}
+            Livraison offerte ✓ Plus que <strong>{{ gift_remaining | money }}</strong> pour obtenir <strong>{{ joeve_gift_amount | money_without_trailing_zeros }} offerts</strong>
           {%- else -%}
-            Bonne nouvelle : la <strong>livraison est offerte</strong>
+            Bravo : <strong>livraison offerte</strong> et <strong>{{ joeve_gift_amount | money_without_trailing_zeros }} offerts</strong> sur votre commande
           {%- endif -%}
         </p>
         <span class="joeve-cart-ship__bar"><span style="width: {{ progress }}%;"></span></span>

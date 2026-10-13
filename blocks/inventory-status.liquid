@@ -31,7 +31,7 @@
       assign wanted = max_days
     endif
     assign ts = now_ts
-    if block.settings.business_days
+    if block.settings.count_business_days
       assign counted = 0
       for i in (1..40)
         if counted >= wanted
@@ -80,7 +80,7 @@
       data-jof-delivery
       data-min="{{ min_days }}"
       data-max="{{ max_days }}"
-      data-business="{{ block.settings.business_days }}"
+      data-business="{{ block.settings.count_business_days }}"
       data-prefix="{{ block.settings.text_prefix | escape }}"
     >
       {{- block.settings.text_prefix }} {{ labels[0] }} et {{ labels[1] -}}
@@ -324,9 +324,9 @@
     },
     {
       "type": "checkbox",
-      "id": "business_days",
+      "id": "count_business_days",
       "label": "Compter seulement les jours ouvrés (sans samedi ni dimanche)",
-      "default": false
+      "default": true
     },
     {
       "type": "header",
