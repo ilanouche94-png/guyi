@@ -33,6 +33,9 @@
     "delivery": {
       "in_stock_between": "In stock: delivered between [from] and [to]"
     },
+    "product": {
+      "size_guide": "Size guide"
+    },
     "price": {
       "sale_badge": "FALL SALE (-{{ off }}%) - While stocks last"
     }

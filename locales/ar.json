@@ -28,6 +28,9 @@
     "delivery": {
       "in_stock_between": "متوفر: يصل بين [from] و[to]"
     },
+    "product": {
+      "size_guide": "دليل المقاسات"
+    },
     "price": {
       "sale_badge": "عرض الخريف (-{{ off }}%) - حتى نفاد الكمية"
     }

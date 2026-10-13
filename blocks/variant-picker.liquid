@@ -154,7 +154,7 @@
       {% endfor %}
 
       {%- if block.settings.size_guide_url != blank -%}
-        <a class="joeve-size-guide" href="{{ block.settings.size_guide_url }}">{{ block.settings.size_guide_label | escape }}</a>
+        <a class="joeve-size-guide" href="{{ block.settings.size_guide_url }}">{%- if block.settings.size_guide_text != blank -%}{{ block.settings.size_guide_text | escape }}{%- else -%}{{ 'joeve.product.size_guide' | t }}{%- endif -%}</a>
       {%- endif -%}
     </xo-product-variants>
   {% endunless %}
@@ -275,9 +275,9 @@
     },
     {
       "type": "text",
-      "id": "size_guide_label",
+      "id": "size_guide_text",
       "label": "Texte du lien",
-      "default": "Guide des tailles"
+      "info": "Laisse vide pour utiliser le texte traduit automatiquement (Size guide / Guide des tailles…)."
     },
     {
       "type": "checkbox",

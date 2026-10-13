@@ -24,6 +24,9 @@
     "delivery": {
       "in_stock_between": "En stock : livré chez vous entre [from] et [to]"
     },
+    "product": {
+      "size_guide": "Guide des tailles"
+    },
     "price": {
       "sale_badge": "OFFRE D'AUTOMNE (-{{ off }}%) - Jusqu’à épuisement des stocks"
     }

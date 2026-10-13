@@ -24,6 +24,9 @@
     "delivery": {
       "in_stock_between": "Op voorraad: geleverd tussen [from] en [to]"
     },
+    "product": {
+      "size_guide": "Maattabel"
+    },
     "price": {
       "sale_badge": "HERFSTAANBIEDING (-{{ off }}%) - Zolang de voorraad strekt"
     }
