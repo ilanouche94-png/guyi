@@ -13,14 +13,6 @@
   assign spacing = block.settings.option_value_spacing | divided_by: 10.0
   assign option_value_style = '--gap: ' | append: spacing | append: 'rem;'
 
-  # Couleurs du sélecteur (modifiables dans l'éditeur de thème)
-  # Pensées pour un site beige : tailles blanches, taille sélectionnée en noir.
-  assign container_style = container_style | append: '--joeve-picker-bg: ' | append: block.settings.picker_selected_bg | append: ';'
-  assign container_style = container_style | append: '--joeve-picker-selected-text: ' | append: block.settings.picker_selected_text | append: ';'
-  assign container_style = container_style | append: '--joeve-picker-border: ' | append: block.settings.picker_selected_border | append: ';'
-  assign container_style = container_style | append: '--joeve-picker-idle: ' | append: block.settings.picker_idle_bg | append: ';'
-  assign container_style = container_style | append: '--joeve-picker-idle-border: ' | append: block.settings.picker_idle_border | append: ';'
-
   if block.settings.inherit_color_scheme != true
     assign container_class = container_class | append: ' color-' | append: block.settings.color_scheme
   endif
@@ -40,11 +32,12 @@
   {% unless product.has_only_default_variant %}
     <style>
   .joeve-variants {
-    --joeve-picker-text: #1a1a1a;
+    --joeve-picker-text: {{ block.settings.size_text_color }};
+    --joeve-picker-muted: {{ block.settings.size_soldout_color }};
   }
 
   .joeve-variants .joeve-variants__option {
-    gap: 1rem;
+    gap: 1.2rem;
   }
 
   .joeve-variants .joeve-variants__label {
@@ -54,80 +47,80 @@
     color: var(--joeve-picker-text);
   }
 
+  /* Tailles en simple texte, sans cadre */
   .joeve-variants .joeve-variants__values {
-    display: grid !important;
-    grid-template-columns: repeat(auto-fit, minmax(4.8rem, 1fr));
-    gap: var(--gap, 0.8rem);
-    width: 100%;
-    max-width: 44rem;
+    display: flex !important;
+    flex-wrap: wrap;
+    align-items: center;
+    column-gap: {{ block.settings.size_gap }}px !important;
+    row-gap: 1.2rem !important;
   }
 
-  .joeve-variants .joeve-variants__values .xo-field-toggle,
-  .joeve-variants .joeve-variants__values .xo-field-toggle__text {
-    width: 100% !important;
-    min-width: 0 !important;
-  }
-
-  /* Toutes les tailles restent cliquables (vente possible même sans stock) : pas de barre ni de grisé */
   .joeve-variants .xo-field-toggle__diagonal {
     display: none !important;
   }
 
+  /* Toutes les tailles restent cliquables (vente possible même sans stock) */
   .joeve-variants .xo-field-toggle,
   .joeve-variants .xo-field-toggle:has(.xo-field-toggle__input[xo-disabled]),
   .joeve-variants .xo-field-toggle:has(.xo-field-toggle__input[xo-unavailable]) {
+    display: inline-flex !important;
     pointer-events: auto !important;
     cursor: pointer !important;
   }
 
+  .joeve-variants .xo-field-toggle__text {
+    display: inline-block !important;
+    min-width: 0 !important;
+    width: auto !important;
+    height: auto !important;
+    padding: 0.2rem 0 0.4rem !important;
+    border: 0 !important;
+    border-radius: 0 !important;
+    background: transparent !important;
+    box-shadow: none !important;
+    color: var(--joeve-picker-text) !important;
+    font-size: {{ block.settings.size_font_size }}px !important;
+    line-height: 1.2 !important;
+    letter-spacing: 0.02em !important;
+    text-decoration: none !important;
+    opacity: 1 !important;
+    transition: color 0.2s ease !important;
+  }
+
+  {%- if block.settings.size_grey_soldout %}
   .joeve-variants .xo-field-toggle:has(.xo-field-toggle__input[xo-disabled]) .xo-field-toggle__text,
   .joeve-variants .xo-field-toggle:has(.xo-field-toggle__input[xo-unavailable]) .xo-field-toggle__text {
-    opacity: 1 !important;
+    color: var(--joeve-picker-muted) !important;
   }
-
-  .joeve-variants .xo-field-toggle {
-    display: inline-flex !important;
-  }
-
-  .joeve-variants .xo-field-toggle__text {
-    display: flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-    min-width: 6.5rem !important;
-    height: 3.6rem !important;
-    padding: 0 1rem !important;
-    border: 1px solid var(--joeve-picker-idle-border) !important;
-    border-radius: 0.8rem !important;
-    background: var(--joeve-picker-idle) !important;
-    color: var(--joeve-picker-text) !important;
-    font-size: 1.5rem !important;
-    line-height: 1 !important;
-    letter-spacing: 0.04em !important;
-    transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease !important;
-  }
+  {%- endif %}
 
   .joeve-variants .xo-field-toggle:hover .xo-field-toggle__text {
-    border-color: var(--joeve-picker-border) !important;
+    text-decoration: underline !important;
+    text-decoration-thickness: 1px !important;
+    text-underline-offset: 0.6rem !important;
   }
 
   .joeve-variants .xo-field-toggle__input:checked + .xo-field-toggle__text {
-    background: var(--joeve-picker-bg) !important;
-    border-color: var(--joeve-picker-border) !important;
-    color: var(--joeve-picker-selected-text) !important;
+    color: var(--joeve-picker-text) !important;
+    text-decoration: underline !important;
+    text-decoration-thickness: 1px !important;
+    text-underline-offset: 0.6rem !important;
   }
 
   .joeve-variants .xo-field-toggle:focus-visible .xo-field-toggle__text {
-    outline: 2px solid var(--joeve-picker-border) !important;
-    outline-offset: 2px !important;
+    outline: 1px solid var(--joeve-picker-text) !important;
+    outline-offset: 3px !important;
   }
 
-
-  @media (max-width: 749px) {
-    .joeve-variants .xo-field-toggle__text {
-      min-width: 5.6rem !important;
-      height: 3.4rem !important;
-      padding: 0 0.6rem !important;
-    }
+  .joeve-variants .joeve-size-guide {
+    align-self: flex-start;
+    color: var(--joeve-picker-text);
+    font-size: {{ block.settings.size_font_size }}px;
+    line-height: 1.3;
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 0.5rem;
   }
     </style>
     <xo-product-variants class="{{ container_class }}" style="{{ container_style }}" {{ block.shopify_attributes }}>
@@ -159,6 +152,10 @@
           </div>
         {% endif %}
       {% endfor %}
+
+      {%- if block.settings.size_guide_url != blank -%}
+        <a class="joeve-size-guide" href="{{ block.settings.size_guide_url }}">{{ block.settings.size_guide_label | escape }}</a>
+      {%- endif -%}
     </xo-product-variants>
   {% endunless %}
 {% endcapture %}
@@ -224,37 +221,63 @@
     },
     {
       "type": "header",
-      "content": "Couleurs des tailles"
+      "content": "Style des tailles"
     },
     {
       "type": "color",
-      "id": "picker_selected_bg",
-      "label": "Fond de la taille sélectionnée",
-      "default": "#1A1A1A"
+      "id": "size_text_color",
+      "label": "Couleur des tailles",
+      "default": "#111111"
+    },
+    {
+      "type": "checkbox",
+      "id": "size_grey_soldout",
+      "label": "Griser les tailles épuisées",
+      "info": "Elles restent cliquables.",
+      "default": true
     },
     {
       "type": "color",
-      "id": "picker_selected_text",
-      "label": "Texte de la taille sélectionnée",
-      "default": "#FFFFFF"
+      "id": "size_soldout_color",
+      "label": "Couleur des tailles épuisées",
+      "default": "#999591",
+      "visible_if": "{{ block.settings.size_grey_soldout == true }}"
     },
     {
-      "type": "color",
-      "id": "picker_selected_border",
-      "label": "Bordure de la taille sélectionnée",
-      "default": "#1A1A1A"
+      "type": "range",
+      "id": "size_font_size",
+      "label": "Taille du texte",
+      "min": 12,
+      "max": 24,
+      "step": 1,
+      "unit": "px",
+      "default": 17
     },
     {
-      "type": "color",
-      "id": "picker_idle_bg",
-      "label": "Fond des autres tailles",
-      "default": "#FFFFFF"
+      "type": "range",
+      "id": "size_gap",
+      "label": "Espace entre les tailles",
+      "min": 8,
+      "max": 80,
+      "step": 2,
+      "unit": "px",
+      "default": 44
     },
     {
-      "type": "color",
-      "id": "picker_idle_border",
-      "label": "Bordure des autres tailles",
-      "default": "#D6CFC4"
+      "type": "header",
+      "content": "Guide des tailles"
+    },
+    {
+      "type": "url",
+      "id": "size_guide_url",
+      "label": "Lien du guide des tailles",
+      "info": "Laisse vide pour ne pas afficher le lien."
+    },
+    {
+      "type": "text",
+      "id": "size_guide_label",
+      "label": "Texte du lien",
+      "default": "Guide des tailles"
     },
     {
       "type": "checkbox",
