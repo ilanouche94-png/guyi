@@ -1,16 +1,16 @@
 // Rattrapage : traduit une fois tous les produits publiés qui ne le sont pas encore.
-// Usage : SHOP_DOMAIN=... SHOPIFY_ADMIN_TOKEN=... ANTHROPIC_API_KEY=... npm run backfill
+// Usage : SHOP_DOMAIN=... SHOPIFY_CLIENT_ID=... SHOPIFY_CLIENT_SECRET=... ANTHROPIC_API_KEY=... npm run backfill
 
-import { translateProduct, type Env } from "./src/core";
+import { shopify, translateProduct, type Env } from "./src/core";
 
 const env: Env = {
   SHOP_DOMAIN: process.env.SHOP_DOMAIN ?? "",
-  SHOPIFY_ADMIN_TOKEN: process.env.SHOPIFY_ADMIN_TOKEN ?? "",
   ANTHROPIC_API_KEY: process.env.ANTHROPIC_API_KEY ?? "",
+  SHOPIFY_ADMIN_TOKEN: process.env.SHOPIFY_ADMIN_TOKEN,
+  SHOPIFY_CLIENT_ID: process.env.SHOPIFY_CLIENT_ID,
+  SHOPIFY_CLIENT_SECRET: process.env.SHOPIFY_CLIENT_SECRET,
 };
-for (const [name, value] of Object.entries(env)) {
-  if (!value) throw new Error(`Variable manquante : ${name}`);
-}
+if (!env.SHOP_DOMAIN || !env.ANTHROPIC_API_KEY) throw new Error("Variables manquantes : SHOP_DOMAIN, ANTHROPIC_API_KEY");
 
 const LIST_QUERY = `
 query ($after: String) {
@@ -23,20 +23,15 @@ query ($after: String) {
 let after: string | null = null;
 let count = 0;
 do {
-  const res = await fetch(`https://${env.SHOP_DOMAIN}/admin/api/2025-10/graphql.json`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json", "X-Shopify-Access-Token": env.SHOPIFY_ADMIN_TOKEN },
-    body: JSON.stringify({ query: LIST_QUERY, variables: { after } }),
-  });
-  const json = (await res.json()) as {
-    data: {
-      products: {
-        nodes: { id: string; title: string }[];
-        pageInfo: { hasNextPage: boolean; endCursor: string };
-      };
+  type Page = {
+    products: {
+      nodes: { id: string; title: string }[];
+      pageInfo: { hasNextPage: boolean; endCursor: string };
     };
   };
-  const { nodes, pageInfo } = json.data.products;
+  const page: Page = await shopify<Page>(env, LIST_QUERY, { after: after as string | null });
+  const nodes: Page["products"]["nodes"] = page.products.nodes;
+  const pageInfo: Page["products"]["pageInfo"] = page.products.pageInfo;
   for (const product of nodes) {
     const report = await translateProduct(env, product.id);
     count++;

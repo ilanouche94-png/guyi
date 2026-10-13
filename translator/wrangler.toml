@@ -6,4 +6,4 @@ compatibility_date = "2026-09-01"
 SHOP_DOMAIN = "q0uptb-wj.myshopify.com"
 
 # Secrets (à ajouter avec `npx wrangler secret put NOM`) :
-#   SHOPIFY_ADMIN_TOKEN, SHOPIFY_WEBHOOK_SECRET, ANTHROPIC_API_KEY
+#   ANTHROPIC_API_KEY, SHOPIFY_CLIENT_ID, SHOPIFY_CLIENT_SECRET, SHOPIFY_WEBHOOK_SECRET

@@ -15,10 +15,15 @@ les traductions dans la boutique, environ 30 secondes plus tard.
 2. **Billing** → ajoute un crédit (5 à 10 $ suffisent pour commencer).
 3. **API Keys** → **Create Key** → copie la clé (elle commence par `sk-ant-`). Garde-la secrète.
 
-### 2. Accès Shopify
-1. Admin Shopify → **Paramètres** → **Applications et canaux de vente** → **Développer des applications** → **Créer une application** (nom : « Traduction auto »).
-2. **Configurer les étendues de l'API Admin** → coche : `read_products`, `read_translations`, `write_translations`, `read_locales` → Enregistrer.
-3. **Installer l'application** → copie le **jeton d'accès API Admin** (commence par `shpat_`). Il ne s'affiche qu'une fois.
+### 2. Accès Shopify (Dev Dashboard)
+1. Sur dev.shopify.com → **Apps** → **Create app** :
+   - **App name** : Trad
+   - **App URL** : laisser `https://example.com`, et **décocher** « Embed app in Shopify admin »
+   - **Scopes** : `read_products,read_translations,write_translations,read_locales`
+   - **Webhooks API version** : laisser la valeur proposée
+   - **Create app**, puis **Release** (publier la version).
+2. Installe l'app sur la boutique Joeve Paris (bouton **Install** / **Stores**).
+3. Dans **Settings** de l'app, copie le **Client ID** et le **Client secret**.
 
 ### 3. Mise en ligne sur Cloudflare (gratuit)
 Dans un terminal, dans ce dossier `translator/` :
@@ -26,8 +31,9 @@ Dans un terminal, dans ce dossier `translator/` :
 ```bash
 npm install
 npx wrangler login                              # ouvre le navigateur, crée/connecte ton compte Cloudflare
-npx wrangler secret put ANTHROPIC_API_KEY       # colle la clé sk-ant-...
-npx wrangler secret put SHOPIFY_ADMIN_TOKEN     # colle le jeton shpat_...
+npx wrangler secret put ANTHROPIC_API_KEY       # colle la clé sk-ant-api03-...
+npx wrangler secret put SHOPIFY_CLIENT_ID       # colle le Client ID
+npx wrangler secret put SHOPIFY_CLIENT_SECRET   # colle le Client secret
 npx wrangler deploy                             # affiche l'adresse du programme, ex. https://joeve-translator.xxx.workers.dev
 ```
 
@@ -45,7 +51,7 @@ C'est fini. Publie un produit test, attends 30 secondes et ouvre `joeveparis.com
 ## Traduire les produits déjà en ligne (facultatif, une fois)
 
 ```bash
-SHOP_DOMAIN=q0uptb-wj.myshopify.com SHOPIFY_ADMIN_TOKEN=shpat_... ANTHROPIC_API_KEY=sk-ant-... npm run backfill
+SHOP_DOMAIN=q0uptb-wj.myshopify.com SHOPIFY_CLIENT_ID=... SHOPIFY_CLIENT_SECRET=... ANTHROPIC_API_KEY=sk-ant-api03-... npm run backfill
 ```
 
 ## Voir ce qui se passe

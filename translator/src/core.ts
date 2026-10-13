@@ -5,9 +5,38 @@ import Anthropic from "@anthropic-ai/sdk";
 
 export interface Env {
   SHOP_DOMAIN: string; // ex. "joeveparis.myshopify.com"
-  SHOPIFY_ADMIN_TOKEN: string;
   ANTHROPIC_API_KEY: string;
+  // Soit un jeton fixe (shpat_...), soit l'identifiant + le secret de l'app du Dev Dashboard.
+  SHOPIFY_ADMIN_TOKEN?: string;
+  SHOPIFY_CLIENT_ID?: string;
+  SHOPIFY_CLIENT_SECRET?: string;
   SHOPIFY_WEBHOOK_SECRET?: string;
+}
+
+let cachedToken: { value: string; expiresAt: number } | null = null;
+
+// Les apps du Dev Dashboard obtiennent un jeton temporaire (24 h) avec leur identifiant et leur secret.
+async function adminToken(env: Env): Promise<string> {
+  if (env.SHOPIFY_ADMIN_TOKEN) return env.SHOPIFY_ADMIN_TOKEN;
+  if (cachedToken && cachedToken.expiresAt > Date.now() + 60_000) return cachedToken.value;
+  if (!env.SHOPIFY_CLIENT_ID || !env.SHOPIFY_CLIENT_SECRET) {
+    throw new Error("Accès Shopify manquant : SHOPIFY_CLIENT_ID et SHOPIFY_CLIENT_SECRET");
+  }
+  const res = await fetch(`https://${env.SHOP_DOMAIN}/admin/oauth/access_token`, {
+    method: "POST",
+    headers: { "Content-Type": "application/x-www-form-urlencoded" },
+    body: new URLSearchParams({
+      grant_type: "client_credentials",
+      client_id: env.SHOPIFY_CLIENT_ID,
+      client_secret: env.SHOPIFY_CLIENT_SECRET,
+    }),
+  });
+  const json = (await res.json()) as { access_token?: string; expires_in?: number };
+  if (!res.ok || !json.access_token) {
+    throw new Error(`Jeton Shopify refusé (${res.status}) : ${JSON.stringify(json)}`);
+  }
+  cachedToken = { value: json.access_token, expiresAt: Date.now() + (json.expires_in ?? 86_400) * 1000 };
+  return cachedToken.value;
 }
 
 export const LOCALES = ["fr", "es", "nl", "ar"] as const;
@@ -49,12 +78,13 @@ interface Job {
   digest: string;
 }
 
-async function shopify<T>(env: Env, query: string, variables: Record<string, unknown>): Promise<T> {
+export async function shopify<T>(env: Env, query: string, variables: Record<string, unknown>): Promise<T> {
+  const token = await adminToken(env);
   const res = await fetch(`https://${env.SHOP_DOMAIN}/admin/api/${API_VERSION}/graphql.json`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      "X-Shopify-Access-Token": env.SHOPIFY_ADMIN_TOKEN,
+      "X-Shopify-Access-Token": token,
     },
     body: JSON.stringify({ query, variables }),
   });
