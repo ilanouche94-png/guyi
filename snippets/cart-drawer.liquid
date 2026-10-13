@@ -10,16 +10,18 @@
   assign joeve_gift_from = 13000
   assign joeve_gift_amount = 1500
 
-  # Palier 1 : livraison offerte. Palier 2 : 15 € offerts (remise automatique Shopify).
+  # Barre du haut : livraison offerte
   assign remaining = joeve_free_from | minus: cart.total_price
-  assign gift_remaining = joeve_gift_from | minus: cart.items_subtotal_price
-  if remaining > 0
-    assign progress = cart.total_price | times: 100 | divided_by: joeve_free_from
-  else
-    assign progress = cart.items_subtotal_price | times: 100 | divided_by: joeve_gift_from
-  endif
+  assign progress = cart.total_price | times: 100 | divided_by: joeve_free_from
   if progress > 100
     assign progress = 100
+  endif
+
+  # Encadré séparé : 15 € offerts (remise automatique Shopify)
+  assign gift_remaining = joeve_gift_from | minus: cart.items_subtotal_price
+  assign gift_progress = cart.items_subtotal_price | times: 100 | divided_by: joeve_gift_from
+  if gift_progress > 100
+    assign gift_progress = 100
   endif
 
   if cart.item_count > 1
@@ -40,10 +42,8 @@
         <p class="joeve-cart-ship__text">
           {%- if remaining > 0 -%}
             Plus que <strong>{{ remaining | money }}</strong> pour profiter de la livraison offerte
-          {%- elsif gift_remaining > 0 -%}
-            Livraison offerte ✓ Plus que <strong>{{ gift_remaining | money }}</strong> pour obtenir <strong>{{ joeve_gift_amount | money_without_trailing_zeros }} offerts</strong>
           {%- else -%}
-            Bravo : <strong>livraison offerte</strong> et <strong>{{ joeve_gift_amount | money_without_trailing_zeros }} offerts</strong> sur votre commande
+            Bonne nouvelle : la <strong>livraison est offerte</strong>
           {%- endif -%}
         </p>
         <span class="joeve-cart-ship__bar"><span style="width: {{ progress }}%;"></span></span>
@@ -53,6 +53,25 @@
         {%- for item in cart.items -%}
           {% render 'joeve-cart-item', item: item, index: forloop.index %}
         {%- endfor -%}
+      </div>
+
+      <div class="joeve-cart-gift{% if gift_remaining <= 0 %} joeve-cart-gift--done{% endif %}">
+        <svg class="joeve-cart-gift__icon" width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <rect x="3" y="8" width="18" height="4" stroke="currentColor" stroke-width="1.3"/>
+          <path d="M5 12v9h14v-9M12 8v13M12 8c-1.5-3.5-5.5-4-5.5-1.5S10 8 12 8zm0 0c1.5-3.5 5.5-4 5.5-1.5S14 8 12 8z" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/>
+        </svg>
+        <div class="joeve-cart-gift__body">
+          <p class="joeve-cart-gift__text">
+            {%- if gift_remaining > 0 -%}
+              <strong>{{ joeve_gift_amount | money_without_trailing_zeros }} offerts</strong> dès {{ joeve_gift_from | money_without_trailing_zeros }} d'achat · plus que <strong>{{ gift_remaining | money }}</strong>
+            {%- else -%}
+              <strong>{{ joeve_gift_amount | money_without_trailing_zeros }} offerts</strong> appliqués à votre commande ✓
+            {%- endif -%}
+          </p>
+          {%- if gift_remaining > 0 -%}
+            <span class="joeve-cart-gift__bar"><span style="width: {{ gift_progress }}%;"></span></span>
+          {%- endif -%}
+        </div>
       </div>
 
       {% render 'joeve-cart-recos' %}
@@ -73,6 +92,54 @@
 {% endcapture %}
 
 {% render 'joeve-cart-style' %}
+
+<style>
+  .joeve-cart-gift {
+    display: flex;
+    align-items: center;
+    gap: 1.2rem;
+    margin: 0.4rem 2rem 0.8rem;
+    padding: 1.3rem 1.4rem;
+    background: #f6f2ee;
+    color: #111111;
+  }
+
+  .joeve-cart-gift__icon {
+    flex-shrink: 0;
+    color: #8c1c16;
+  }
+
+  .joeve-cart-gift__body {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .joeve-cart-gift__text {
+    margin: 0;
+    font-size: 1.35rem;
+    line-height: 1.4;
+  }
+
+  .joeve-cart-gift__text strong {
+    font-weight: 400;
+    color: #8c1c16;
+  }
+
+  .joeve-cart-gift__bar {
+    display: block;
+    height: 0.3rem;
+    margin-top: 0.8rem;
+    background: #e4dad2;
+    overflow: hidden;
+  }
+
+  .joeve-cart-gift__bar > span {
+    display: block;
+    height: 100%;
+    background: #8c1c16;
+    transition: width 0.4s ease;
+  }
+</style>
 
 {% render 'modal-content',
   container_class: 'joeve-cart',
