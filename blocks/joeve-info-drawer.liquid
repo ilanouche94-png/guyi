@@ -170,6 +170,26 @@
     margin-bottom: 0;
   }
 
+  /* Titres dans la description : même taille que le titre « Description » */
+  #{{ uid }} .joeve-drawer__content h1,
+  #{{ uid }} .joeve-drawer__content h2,
+  #{{ uid }} .joeve-drawer__content h3,
+  #{{ uid }} .joeve-drawer__content h4,
+  #{{ uid }} .joeve-drawer__content h5,
+  #{{ uid }} .joeve-drawer__content h6 {
+    margin: 1.8rem 0 0.6rem !important;
+    font-family: inherit !important;
+    font-size: 1.5rem !important;
+    font-weight: 400 !important;
+    line-height: 1.4 !important;
+    letter-spacing: 0.03em !important;
+    text-transform: none !important;
+  }
+
+  #{{ uid }} .joeve-drawer__content > :first-child {
+    margin-top: 0 !important;
+  }
+
   #{{ uid }} .joeve-drawer__content p {
     margin: 0 0 1rem;
   }
