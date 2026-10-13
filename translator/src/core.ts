@@ -50,7 +50,7 @@ const LANGUAGE_NAMES: Record<Locale, string> = {
 };
 
 const MODEL = "claude-sonnet-5-5";
-const API_VERSION = "2025-10";
+const API_VERSION = "2026-10";
 
 // Champs du produit à traduire (on ignore l'URL "handle" et le type interne).
 const PRODUCT_KEYS = new Set(["title", "body_html", "meta_title", "meta_description"]);
