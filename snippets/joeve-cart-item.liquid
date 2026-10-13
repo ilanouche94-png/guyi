@@ -53,9 +53,9 @@
         {%- endfor -%}
       </div>
       <div class="joeve-cart-item__price">
-        <span>{{ item.final_price | money }}</span>
+        <span><span class="money">{{ item.final_price | money }}</span></span>
         {%- if compare > item.final_price -%}
-          <s>{{ compare | money }}</s>
+          <s class="money">{{ compare | money }}</s>
         {%- endif -%}
       </div>
     </div>

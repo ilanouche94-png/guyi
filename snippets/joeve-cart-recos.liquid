@@ -44,8 +44,8 @@
         <div class="joeve-reco__body">
           <a href="{{ p.url }}" class="joeve-reco__title">{{ p.title | escape }}</a>
           <div class="joeve-reco__price">
-            {%- if p.compare_at_price > p.price -%}<s>{{ p.compare_at_price | money }}</s>{%- endif -%}
-            <span>{{ p.price | money }}</span>
+            {%- if p.compare_at_price > p.price -%}<s class="money">{{ p.compare_at_price | money }}</s>{%- endif -%}
+            <span><span class="money">{{ p.price | money }}</span></span>
           </div>
           <div class="joeve-reco__row">
             {%- unless p.has_only_default_variant -%}

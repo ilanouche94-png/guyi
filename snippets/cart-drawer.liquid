@@ -41,7 +41,7 @@
       <div class="joeve-cart-ship">
         <p class="joeve-cart-ship__text">
           {%- if remaining > 0 -%}
-            Plus que <strong>{{ remaining | money }}</strong> pour profiter de la livraison offerte
+            Plus que <strong><span class="money">{{ remaining | money }}</span></strong> pour profiter de la livraison offerte
           {%- else -%}
             Bonne nouvelle : la <strong>livraison est offerte</strong>
           {%- endif -%}
@@ -63,9 +63,9 @@
         <div class="joeve-cart-gift__body">
           <p class="joeve-cart-gift__text">
             {%- if gift_remaining > 0 -%}
-              <strong>{{ joeve_gift_amount | money_without_trailing_zeros }} offerts</strong> dès {{ joeve_gift_from | money_without_trailing_zeros }} d'achat · plus que <strong>{{ gift_remaining | money }}</strong>
+              <strong><span class="money">{{ joeve_gift_amount | money_without_trailing_zeros }}</span> offerts</strong> dès <span class="money">{{ joeve_gift_from | money_without_trailing_zeros }}</span> d'achat · plus que <strong><span class="money">{{ gift_remaining | money }}</span></strong>
             {%- else -%}
-              <strong>{{ joeve_gift_amount | money_without_trailing_zeros }} offerts</strong> appliqués à votre commande ✓
+              <strong><span class="money">{{ joeve_gift_amount | money_without_trailing_zeros }}</span> offerts</strong> appliqués à votre commande ✓
             {%- endif -%}
           </p>
           {%- if gift_remaining > 0 -%}

@@ -37,7 +37,7 @@
       {%- if savings > 0 -%}
         <div class="joeve-cart-footer__savings">
           <span>Vos économies</span>
-          <span class="joeve-cart-footer__savings-amount">-{{ savings | money }}</span>
+          <span class="joeve-cart-footer__savings-amount">-<span class="money">{{ savings | money }}</span></span>
         </div>
       {%- endif -%}
 
@@ -52,17 +52,17 @@
           ></joeve-ship-dates>
         </span>
         <span class="joeve-cart-footer__ship-price">
-          {%- if shipping == 0 -%}Offerte{%- else -%}{{ shipping | money }}{%- endif -%}
+          {%- if shipping == 0 -%}Offerte{%- else -%}<span class="money">{{ shipping | money }}</span>{%- endif -%}
         </span>
       </div>
 
       <div class="joeve-cart-footer__row joeve-cart-footer__row--total">
         <span>Total</span>
-        <strong>{{ grand_total | money_with_currency }}</strong>
+        <strong><span class="money">{{ grand_total | money }}</span></strong>
       </div>
 
       {%- for discount in cart.cart_level_discount_applications -%}
-        <div class="joeve-cart-footer__discount">{{ discount.title }} (-{{ discount.total_allocated_amount | money }})</div>
+        <div class="joeve-cart-footer__discount">{{ discount.title }} (-<span class="money">{{ discount.total_allocated_amount | money }}</span>)</div>
       {%- endfor -%}
     {%- endif -%}
   </xo-cart-will-change>
@@ -86,6 +86,7 @@
       </ul>
     {%- endif -%}
 
+    <p class="joeve-cart-footer__note">Paiement sécurisé en euros, converti par votre banque</p>
     <p class="joeve-cart-footer__note">Retours sous 30 jours · Paiement sécurisé</p>
   </div>
 </div>
