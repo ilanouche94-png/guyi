@@ -30,5 +30,217 @@
     "price": {
       "sale_badge": "OFERTA DE OTOÑO (-{{ off }}%) - Hasta agotar existencias"
     }
+  },
+  "products": {
+    "product": {
+      "add_to_cart": "Añadir al carrito",
+      "buy_now": "Comprar ahora",
+      "quick_view": "Vista rápida",
+      "select_options": "Elegir opciones",
+      "choose_options": "Elegir opciones",
+      "choose_product_options": "Elegir opciones de {{ product_name }}",
+      "add_to_wishlist": "Añadir a favoritos",
+      "remove_from_wishlist": "Quitar de favoritos",
+      "description": "Descripción",
+      "on_sale": "Oferta",
+      "new": "Nuevo",
+      "pre_order_text": "Reservar",
+      "sold_out": "Agotado",
+      "unavailable": "No disponible",
+      "share": "Compartir este producto",
+      "view_full_details": "Ver todos los detalles",
+      "preview": "Vista previa",
+      "prev": "Anterior",
+      "next": "Siguiente",
+      "quantity": {
+        "label": "Cantidad",
+        "input_label": "Cantidad de {{ product }}",
+        "increase": "Aumentar la cantidad de {{ product }}",
+        "decrease": "Reducir la cantidad de {{ product }}"
+      },
+      "price": {
+        "from_price_html": "Desde {{ price }}",
+        "regular_price": "Precio habitual",
+        "sale_price": "Precio rebajado",
+        "unit_price": "Precio unitario",
+        "include_tax": "Impuestos incluidos.",
+        "shipping_policy": "Envío calculado al pagar."
+      },
+      "include_taxes": "Impuestos incluidos.",
+      "shipping_policy_html": "<a href=\"{{ link }}\">Envío</a> calculado al pagar.",
+      "recipient": {
+        "checkbox_label": "Quiero enviarlo como regalo"
+      }
+    }
+  },
+  "general": {
+    "home": "Inicio",
+    "back": "Volver",
+    "continue_shopping": "Seguir comprando",
+    "start_shopping": "Empezar a comprar",
+    "pagination": {
+      "next": "Página siguiente",
+      "previous": "Página anterior",
+      "page": "Página {{ number }}"
+    },
+    "search": {
+      "search": "Buscar...",
+      "popular_searches": "Búsquedas populares"
+    },
+    "cart": {
+      "view": "Ver mi carrito ({{ count }})",
+      "item_added": "Artículo añadido al carrito"
+    },
+    "share": {
+      "copy_to_clipboard": "Copiar enlace",
+      "success_message": "Enlace copiado",
+      "close": "Cerrar"
+    },
+    "slider": {
+      "of": "de"
+    },
+    "modal": {
+      "close": "Cerrar",
+      "back": "Volver"
+    },
+    "countdown": {
+      "day": "Días",
+      "hour": "Horas",
+      "minute": "Minutos",
+      "second": "Segundos",
+      "day_short": "D",
+      "hour_short": "H",
+      "minute_short": "MIN",
+      "second_short": "SEG"
+    },
+    "popups": {
+      "days": "Días",
+      "hours": "Horas",
+      "minutes": "Minutos",
+      "seconds": "Segundos"
+    },
+    "inventory_status": {
+      "ready_to_ship": "En stock, listo para enviar",
+      "left_in_stock": "¡Date prisa, solo quedan {{ count }}!",
+      "low_stock": "Pocas unidades",
+      "out_of_stock": "Agotado",
+      "in_stock": "{{ count }} en stock"
+    },
+    "tooltip": {
+      "back_to_top": "Volver arriba"
+    }
+  },
+  "sections": {
+    "header": {
+      "menu": "Menú",
+      "cart_count": {
+        "one": "{{ count }} artículo",
+        "other": "{{ count }} artículos"
+      }
+    },
+    "cart": {
+      "title": "Tu carrito",
+      "subtotal": "Subtotal",
+      "checkout": "Pagar",
+      "empty": "Tu carrito está vacío",
+      "delete": "Eliminar",
+      "apply": "Aplicar",
+      "remove_title": "Eliminar {{ title }}",
+      "note_title": "Nota",
+      "discount_title": "Descuento",
+      "discount_label": "Código de descuento",
+      "shipping": "Envío",
+      "estimated_total": "Total estimado",
+      "view_cart": "Ver carrito",
+      "continue_shoping": "Seguir comprando",
+      "item_added": "Artículo añadido al carrito",
+      "cart_error": "Se produjo un error al actualizar tu carrito. Inténtalo de nuevo.",
+      "cart_quantity_error_html": "Solo puedes añadir {{ quantity }} unidad(es) de este artículo.",
+      "taxes_and_shipping_at_checkout": "Impuestos y envío calculados al pagar",
+      "headings": {
+        "product": "Producto",
+        "price": "Precio",
+        "total": "Total",
+        "quantity": "Cantidad"
+      }
+    },
+    "featured_collection": {
+      "view_all": "Ver todo"
+    },
+    "collection_list": {
+      "view_all": "Ver todo"
+    },
+    "featured_blog": {
+      "view_all": "Ver todo"
+    },
+    "collection_template": {
+      "empty": "No se encontraron productos",
+      "use_fewer_filters_html": "Usa menos filtros o <a class=\"{{ class }}\" href=\"{{ link }}\">bórralos todos</a>"
+    },
+    "wishlist": {
+      "empty": "Aún no hay productos en tus favoritos"
+    }
+  },
+  "templates": {
+    "404": {
+      "title": "Página no encontrada"
+    },
+    "search": {
+      "result_not_found": "Sin resultados",
+      "message_title": "No hay resultados para “{{ terms }}”",
+      "message_subtitle": "Prueba con otra ortografía o con otra palabra.",
+      "no_results": "No hay resultados para “{{ terms }}”. Prueba con otras palabras clave.",
+      "reset_search": "Restablecer búsqueda",
+      "view_all": "Ver todos los resultados",
+      "search_title": "Búsqueda",
+      "title": "Resultados de búsqueda",
+      "products": "Productos",
+      "collections": "Colecciones",
+      "pages": "Páginas",
+      "articles": "Artículos",
+      "search_for": "Buscar “{{ terms }}”",
+      "results_with_count": {
+        "one": "{{ count }} resultado",
+        "other": "{{ count }} resultados"
+      },
+      "results_with_count_and_term": {
+        "one": "{{ count }} resultado para “{{ terms }}”",
+        "other": "{{ count }} resultados para “{{ terms }}”"
+      }
+    },
+    "cart": {
+      "cart": "Carrito"
+    },
+    "contact": {
+      "form": {
+        "first_name": "Nombre",
+        "last_name": "Apellido",
+        "email": "Correo electrónico",
+        "subject": "Asunto",
+        "phone": "Teléfono",
+        "message": "Mensaje",
+        "inquiry": "Tu consulta trata sobre",
+        "order": "Pedido",
+        "collaboration": "Colaboración",
+        "return_exchange": "Devolución y cambio",
+        "send": "Enviar",
+        "post_success": "Gracias por contactarnos. Te responderemos lo antes posible.",
+        "error_heading": "Corrige lo siguiente:"
+      }
+    }
+  },
+  "localization": {
+    "country_label": "País/región",
+    "language_label": "Idioma"
+  },
+  "newsletter": {
+    "label": "Tu correo electrónico",
+    "success": "Gracias por suscribirte",
+    "button_label": "Suscribirse"
+  },
+  "accessibility": {
+    "close": "Cerrar",
+    "loading": "Cargando...",
+    "skip_to_text": "Ir al contenido"
   }
 }

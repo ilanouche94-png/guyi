@@ -34,5 +34,217 @@
     "price": {
       "sale_badge": "عرض الخريف (-{{ off }}%) - حتى نفاد الكمية"
     }
+  },
+  "products": {
+    "product": {
+      "add_to_cart": "أضيفي إلى السلة",
+      "buy_now": "اشتري الآن",
+      "quick_view": "عرض سريع",
+      "select_options": "اختاري الخيارات",
+      "choose_options": "اختاري الخيارات",
+      "choose_product_options": "اختاري خيارات {{ product_name }}",
+      "add_to_wishlist": "أضيفي إلى المفضلة",
+      "remove_from_wishlist": "إزالة من المفضلة",
+      "description": "الوصف",
+      "on_sale": "تخفيض",
+      "new": "جديد",
+      "pre_order_text": "طلب مسبق",
+      "sold_out": "نفدت الكمية",
+      "unavailable": "غير متوفر",
+      "share": "شاركي هذا المنتج",
+      "view_full_details": "عرض كل التفاصيل",
+      "preview": "معاينة",
+      "prev": "السابق",
+      "next": "التالي",
+      "quantity": {
+        "label": "الكمية",
+        "input_label": "كمية {{ product }}",
+        "increase": "زيادة كمية {{ product }}",
+        "decrease": "تقليل كمية {{ product }}"
+      },
+      "price": {
+        "from_price_html": "ابتداءً من {{ price }}",
+        "regular_price": "السعر العادي",
+        "sale_price": "سعر التخفيض",
+        "unit_price": "سعر الوحدة",
+        "include_tax": "شامل الضرائب.",
+        "shipping_policy": "يُحسب الشحن عند الدفع."
+      },
+      "include_taxes": "شامل الضرائب.",
+      "shipping_policy_html": "يُحسب <a href=\"{{ link }}\">الشحن</a> عند الدفع.",
+      "recipient": {
+        "checkbox_label": "أريد إرساله كهدية"
+      }
+    }
+  },
+  "general": {
+    "home": "الرئيسية",
+    "back": "رجوع",
+    "continue_shopping": "متابعة التسوق",
+    "start_shopping": "ابدئي التسوق",
+    "pagination": {
+      "next": "الصفحة التالية",
+      "previous": "الصفحة السابقة",
+      "page": "صفحة {{ number }}"
+    },
+    "search": {
+      "search": "ابحثي...",
+      "popular_searches": "عمليات البحث الشائعة"
+    },
+    "cart": {
+      "view": "عرض سلتي ({{ count }})",
+      "item_added": "تمت إضافة المنتج إلى سلتك"
+    },
+    "share": {
+      "copy_to_clipboard": "نسخ الرابط",
+      "success_message": "تم نسخ الرابط",
+      "close": "إغلاق"
+    },
+    "slider": {
+      "of": "من"
+    },
+    "modal": {
+      "close": "إغلاق",
+      "back": "رجوع"
+    },
+    "countdown": {
+      "day": "أيام",
+      "hour": "ساعات",
+      "minute": "دقائق",
+      "second": "ثوانٍ",
+      "day_short": "يوم",
+      "hour_short": "ساعة",
+      "minute_short": "دقيقة",
+      "second_short": "ثانية"
+    },
+    "popups": {
+      "days": "أيام",
+      "hours": "ساعات",
+      "minutes": "دقائق",
+      "seconds": "ثوانٍ"
+    },
+    "inventory_status": {
+      "ready_to_ship": "متوفر وجاهز للشحن",
+      "left_in_stock": "أسرعي، تبقّى {{ count }} فقط!",
+      "low_stock": "كمية محدودة",
+      "out_of_stock": "غير متوفر",
+      "in_stock": "{{ count }} متوفرة"
+    },
+    "tooltip": {
+      "back_to_top": "العودة للأعلى"
+    }
+  },
+  "sections": {
+    "header": {
+      "menu": "القائمة",
+      "cart_count": {
+        "one": "{{ count }} منتج",
+        "other": "{{ count }} منتجات"
+      }
+    },
+    "cart": {
+      "title": "سلة التسوق",
+      "subtotal": "المجموع الفرعي",
+      "checkout": "إتمام الطلب",
+      "empty": "سلتك فارغة",
+      "delete": "حذف",
+      "apply": "تطبيق",
+      "remove_title": "حذف {{ title }}",
+      "note_title": "ملاحظة",
+      "discount_title": "خصم",
+      "discount_label": "رمز الخصم",
+      "shipping": "الشحن",
+      "estimated_total": "الإجمالي التقديري",
+      "view_cart": "عرض السلة",
+      "continue_shoping": "متابعة التسوق",
+      "item_added": "تمت إضافة المنتج إلى سلتك",
+      "cart_error": "حدث خطأ أثناء تحديث سلتك. حاولي مرة أخرى.",
+      "cart_quantity_error_html": "يمكنك إضافة {{ quantity }} فقط من هذا المنتج.",
+      "taxes_and_shipping_at_checkout": "تُحسب الضرائب والشحن عند الدفع",
+      "headings": {
+        "product": "المنتج",
+        "price": "السعر",
+        "total": "الإجمالي",
+        "quantity": "الكمية"
+      }
+    },
+    "featured_collection": {
+      "view_all": "عرض الكل"
+    },
+    "collection_list": {
+      "view_all": "عرض الكل"
+    },
+    "featured_blog": {
+      "view_all": "عرض الكل"
+    },
+    "collection_template": {
+      "empty": "لم يتم العثور على منتجات",
+      "use_fewer_filters_html": "استخدمي فلاتر أقل أو <a class=\"{{ class }}\" href=\"{{ link }}\">امسحي الكل</a>"
+    },
+    "wishlist": {
+      "empty": "لا توجد منتجات في المفضلة بعد"
+    }
+  },
+  "templates": {
+    "404": {
+      "title": "الصفحة غير موجودة"
+    },
+    "search": {
+      "result_not_found": "لا توجد نتائج",
+      "message_title": "لا توجد نتائج لـ «{{ terms }}»",
+      "message_subtitle": "جرّبي تهجئة أخرى أو كلمة مختلفة.",
+      "no_results": "لا توجد نتائج لـ «{{ terms }}». جرّبي كلمات أخرى.",
+      "reset_search": "إعادة البحث",
+      "view_all": "عرض كل النتائج",
+      "search_title": "بحث",
+      "title": "نتائج البحث",
+      "products": "المنتجات",
+      "collections": "المجموعات",
+      "pages": "الصفحات",
+      "articles": "المقالات",
+      "search_for": "البحث عن «{{ terms }}»",
+      "results_with_count": {
+        "one": "{{ count }} نتيجة",
+        "other": "{{ count }} نتائج"
+      },
+      "results_with_count_and_term": {
+        "one": "{{ count }} نتيجة لـ «{{ terms }}»",
+        "other": "{{ count }} نتائج لـ «{{ terms }}»"
+      }
+    },
+    "cart": {
+      "cart": "السلة"
+    },
+    "contact": {
+      "form": {
+        "first_name": "الاسم الأول",
+        "last_name": "اسم العائلة",
+        "email": "البريد الإلكتروني",
+        "subject": "الموضوع",
+        "phone": "رقم الهاتف",
+        "message": "الرسالة",
+        "inquiry": "استفسارك حول",
+        "order": "طلب",
+        "collaboration": "تعاون",
+        "return_exchange": "الإرجاع والاستبدال",
+        "send": "إرسال",
+        "post_success": "شكرًا لتواصلك معنا. سنرد عليك في أقرب وقت.",
+        "error_heading": "يرجى تعديل ما يلي:"
+      }
+    }
+  },
+  "localization": {
+    "country_label": "البلد/المنطقة",
+    "language_label": "اللغة"
+  },
+  "newsletter": {
+    "label": "بريدك الإلكتروني",
+    "success": "شكرًا لاشتراكك",
+    "button_label": "اشتراك"
+  },
+  "accessibility": {
+    "close": "إغلاق",
+    "loading": "جارٍ التحميل...",
+    "skip_to_text": "انتقلي إلى المحتوى"
   }
 }

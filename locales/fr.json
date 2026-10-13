@@ -30,5 +30,217 @@
     "price": {
       "sale_badge": "OFFRE D'AUTOMNE (-{{ off }}%) - Jusqu’à épuisement des stocks"
     }
+  },
+  "products": {
+    "product": {
+      "add_to_cart": "Ajouter au panier",
+      "buy_now": "Acheter maintenant",
+      "quick_view": "Aperçu rapide",
+      "select_options": "Choisir les options",
+      "choose_options": "Choisir les options",
+      "choose_product_options": "Choisir les options de {{ product_name }}",
+      "add_to_wishlist": "Ajouter aux favoris",
+      "remove_from_wishlist": "Retirer des favoris",
+      "description": "Description",
+      "on_sale": "Promo",
+      "new": "Nouveau",
+      "pre_order_text": "Précommander",
+      "sold_out": "Épuisé",
+      "unavailable": "Indisponible",
+      "share": "Partager ce produit",
+      "view_full_details": "Voir tous les détails",
+      "preview": "Aperçu",
+      "prev": "Précédent",
+      "next": "Suivant",
+      "quantity": {
+        "label": "Quantité",
+        "input_label": "Quantité de {{ product }}",
+        "increase": "Augmenter la quantité de {{ product }}",
+        "decrease": "Diminuer la quantité de {{ product }}"
+      },
+      "price": {
+        "from_price_html": "À partir de {{ price }}",
+        "regular_price": "Prix normal",
+        "sale_price": "Prix soldé",
+        "unit_price": "Prix unitaire",
+        "include_tax": "Taxes incluses.",
+        "shipping_policy": "Livraison calculée au paiement."
+      },
+      "include_taxes": "Taxes incluses.",
+      "shipping_policy_html": "<a href=\"{{ link }}\">Livraison</a> calculée au paiement.",
+      "recipient": {
+        "checkbox_label": "Je veux l'offrir en cadeau"
+      }
+    }
+  },
+  "general": {
+    "home": "Accueil",
+    "back": "Retour",
+    "continue_shopping": "Continuer mes achats",
+    "start_shopping": "Commencer mes achats",
+    "pagination": {
+      "next": "Page suivante",
+      "previous": "Page précédente",
+      "page": "Page {{ number }}"
+    },
+    "search": {
+      "search": "Rechercher...",
+      "popular_searches": "Recherches populaires"
+    },
+    "cart": {
+      "view": "Voir mon panier ({{ count }})",
+      "item_added": "Article ajouté au panier"
+    },
+    "share": {
+      "copy_to_clipboard": "Copier le lien",
+      "success_message": "Lien copié",
+      "close": "Fermer"
+    },
+    "slider": {
+      "of": "sur"
+    },
+    "modal": {
+      "close": "Fermer",
+      "back": "Retour"
+    },
+    "countdown": {
+      "day": "Jours",
+      "hour": "Heures",
+      "minute": "Minutes",
+      "second": "Secondes",
+      "day_short": "J",
+      "hour_short": "H",
+      "minute_short": "MIN",
+      "second_short": "SEC"
+    },
+    "popups": {
+      "days": "Jours",
+      "hours": "Heures",
+      "minutes": "Minutes",
+      "seconds": "Secondes"
+    },
+    "inventory_status": {
+      "ready_to_ship": "En stock, prêt à être expédié",
+      "left_in_stock": "Vite, plus que {{ count }} en stock !",
+      "low_stock": "Stock limité",
+      "out_of_stock": "Rupture de stock",
+      "in_stock": "{{ count }} en stock"
+    },
+    "tooltip": {
+      "back_to_top": "Haut de page"
+    }
+  },
+  "sections": {
+    "header": {
+      "menu": "Menu",
+      "cart_count": {
+        "one": "{{ count }} article",
+        "other": "{{ count }} articles"
+      }
+    },
+    "cart": {
+      "title": "Votre panier",
+      "subtotal": "Sous-total",
+      "checkout": "Paiement",
+      "empty": "Votre panier est vide",
+      "delete": "Supprimer",
+      "apply": "Appliquer",
+      "remove_title": "Supprimer {{ title }}",
+      "note_title": "Note",
+      "discount_title": "Réduction",
+      "discount_label": "Code promo",
+      "shipping": "Livraison",
+      "estimated_total": "Total estimé",
+      "view_cart": "Voir le panier",
+      "continue_shoping": "Continuer mes achats",
+      "item_added": "Article ajouté au panier",
+      "cart_error": "Une erreur est survenue lors de la mise à jour du panier. Réessayez.",
+      "cart_quantity_error_html": "Vous ne pouvez ajouter que {{ quantity }} exemplaire(s) de cet article.",
+      "taxes_and_shipping_at_checkout": "Taxes et livraison calculées au paiement",
+      "headings": {
+        "product": "Produit",
+        "price": "Prix",
+        "total": "Total",
+        "quantity": "Quantité"
+      }
+    },
+    "featured_collection": {
+      "view_all": "Tout voir"
+    },
+    "collection_list": {
+      "view_all": "Tout voir"
+    },
+    "featured_blog": {
+      "view_all": "Tout voir"
+    },
+    "collection_template": {
+      "empty": "Aucun produit trouvé",
+      "use_fewer_filters_html": "Utilisez moins de filtres ou <a class=\"{{ class }}\" href=\"{{ link }}\">effacez tout</a>"
+    },
+    "wishlist": {
+      "empty": "Aucun produit dans vos favoris pour l'instant"
+    }
+  },
+  "templates": {
+    "404": {
+      "title": "Page introuvable"
+    },
+    "search": {
+      "result_not_found": "Aucun résultat",
+      "message_title": "Aucun résultat pour « {{ terms }} »",
+      "message_subtitle": "Essayez une autre orthographe ou un autre mot.",
+      "no_results": "Aucun résultat pour « {{ terms }} ». Essayez avec d'autres mots-clés.",
+      "reset_search": "Réinitialiser la recherche",
+      "view_all": "Voir tous les résultats",
+      "search_title": "Recherche",
+      "title": "Résultats de recherche",
+      "products": "Produits",
+      "collections": "Collections",
+      "pages": "Pages",
+      "articles": "Articles",
+      "search_for": "Rechercher « {{ terms }} »",
+      "results_with_count": {
+        "one": "{{ count }} résultat",
+        "other": "{{ count }} résultats"
+      },
+      "results_with_count_and_term": {
+        "one": "{{ count }} résultat pour « {{ terms }} »",
+        "other": "{{ count }} résultats pour « {{ terms }} »"
+      }
+    },
+    "cart": {
+      "cart": "Panier"
+    },
+    "contact": {
+      "form": {
+        "first_name": "Prénom",
+        "last_name": "Nom",
+        "email": "E-mail",
+        "subject": "Sujet",
+        "phone": "Téléphone",
+        "message": "Message",
+        "inquiry": "Votre demande concerne",
+        "order": "Commande",
+        "collaboration": "Collaboration",
+        "return_exchange": "Retour et échange",
+        "send": "Envoyer",
+        "post_success": "Merci de nous avoir contactés. Nous vous répondrons au plus vite.",
+        "error_heading": "Merci de corriger les points suivants :"
+      }
+    }
+  },
+  "localization": {
+    "country_label": "Pays/région",
+    "language_label": "Langue"
+  },
+  "newsletter": {
+    "label": "Votre e-mail",
+    "success": "Merci pour votre inscription",
+    "button_label": "S'inscrire"
+  },
+  "accessibility": {
+    "close": "Fermer",
+    "loading": "Chargement...",
+    "skip_to_text": "Aller au contenu"
   }
 }
