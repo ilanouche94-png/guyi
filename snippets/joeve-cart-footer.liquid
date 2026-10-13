@@ -1,0 +1,105 @@
+{% comment %}
+  Bas du tiroir panier Joeve : économies, livraison, total, paiement.
+
+  @param {number} joeve_ship_price - Prix de la livraison en centimes
+  @param {number} joeve_free_from - Livraison offerte à partir de (centimes)
+  @param {number} joeve_ship_min_days - Livraison au plus tôt (jours)
+  @param {number} joeve_ship_max_days - Livraison au plus tard (jours)
+{% endcomment %}
+
+{%- liquid
+  assign savings = 0
+  for item in cart.items
+    assign unit_compare = item.variant.compare_at_price | default: 0
+    if item.original_price > unit_compare
+      assign unit_compare = item.original_price
+    endif
+    assign line_compare = unit_compare | times: item.quantity
+    if line_compare > item.final_line_price
+      assign savings = savings | plus: line_compare | minus: item.final_line_price
+    endif
+  endfor
+  if cart.items_subtotal_price > cart.total_price
+    assign savings = savings | plus: cart.items_subtotal_price | minus: cart.total_price
+  endif
+
+  if cart.total_price >= joeve_free_from
+    assign shipping = 0
+  else
+    assign shipping = joeve_ship_price
+  endif
+  assign grand_total = cart.total_price | plus: shipping
+-%}
+
+<style>
+  .joeve-cart-footer__ship-price {
+    flex-shrink: 0;
+    white-space: nowrap;
+  }
+
+  .joeve-cart-footer__dates:empty {
+    display: none;
+  }
+</style>
+
+<div class="joeve-cart-footer">
+  <xo-cart-will-change xo-unique-id="xo-cart-mini-footer-drawer">
+    {%- if cart != empty -%}
+      {%- if savings > 0 -%}
+        <div class="joeve-cart-footer__savings">
+          <span>Vos économies</span>
+          <span class="joeve-cart-footer__savings-amount">-{{ savings | money }}</span>
+        </div>
+      {%- endif -%}
+
+      <div class="joeve-cart-footer__row">
+        <span>
+          Livraison <small>(suivie)</small>
+          <joeve-ship-dates
+            class="joeve-cart-footer__dates"
+            data-min="{{ joeve_ship_min_days }}"
+            data-max="{{ joeve_ship_max_days }}"
+          ></joeve-ship-dates>
+        </span>
+        <span class="joeve-cart-footer__ship-price">
+          {%- if shipping == 0 -%}Offerte{%- else -%}{{ shipping | money }}{%- endif -%}
+        </span>
+      </div>
+
+      <div class="joeve-cart-footer__row joeve-cart-footer__row--total">
+        <span>Total</span>
+        <strong>{{ grand_total | money_with_currency }}</strong>
+      </div>
+
+      {%- for discount in cart.cart_level_discount_applications -%}
+        <div class="joeve-cart-footer__discount">{{ discount.title }} (-{{ discount.total_allocated_amount | money }})</div>
+      {%- endfor -%}
+    {%- endif -%}
+  </xo-cart-will-change>
+
+  <div class="joeve-cart-footer__static">
+    <form action="{{ routes.cart_url }}" method="post" class="joeve-cart-footer__form">
+      <button type="submit" name="checkout" class="joeve-cart-footer__checkout">
+        <svg width="14" height="16" viewBox="0 0 14 16" fill="none" aria-hidden="true">
+          <rect x="1" y="7" width="12" height="8" rx="1.2" stroke="currentColor" stroke-width="1.5"/>
+          <path d="M4 7V4.6a3 3 0 0 1 6 0V7" stroke="currentColor" stroke-width="1.5"/>
+        </svg>
+        <span>Commander</span>
+      </button>
+    </form>
+
+    {%- if additional_checkout_buttons -%}
+      <div class="joeve-cart-footer__dynamic">{{ content_for_additional_checkout_buttons }}</div>
+    {%- endif -%}
+
+    {%- if shop.enabled_payment_types.size > 0 -%}
+      <ul class="joeve-cart-footer__payments" role="list">
+        {%- for type in shop.enabled_payment_types -%}
+          <li>{{ type | payment_type_svg_tag }}</li>
+        {%- endfor -%}
+      </ul>
+    {%- endif -%}
+
+    <p class="joeve-cart-footer__note">Retours sous 30 jours · Paiement sécurisé</p>
+  </div>
+</div>

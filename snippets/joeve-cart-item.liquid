@@ -1,0 +1,76 @@
+{% comment %}
+  Article du panier (tiroir Joeve)
+
+  @param {object} item - Ligne du panier
+  @param {integer} index - Position de la ligne (1, 2, 3...)
+{% endcomment %}
+
+{%- liquid
+  assign compare = item.variant.compare_at_price | default: 0
+  if item.original_price > compare
+    assign compare = item.original_price
+  endif
+-%}
+
+<xo-product
+  class="xo-cart-mini-item joeve-cart-item"
+  xo-section-id="mini-cart"
+  xo-product-id="{{ item.product_id }}"
+  xo-line="{{ index }}"
+>
+  <a href="{{ item.url }}" class="joeve-cart-item__media" aria-label="{{ item.product.title | escape }}">
+    {%- if item.image != blank -%}
+      <img
+        src="{{ item.image | image_url: width: 360 }}"
+        alt="{{ item.image.alt | default: item.product.title | escape }}"
+        width="180"
+        height="{{ 180 | divided_by: item.image.aspect_ratio | round }}"
+        loading="lazy"
+      >
+    {%- endif -%}
+  </a>
+
+  <div class="joeve-cart-item__info">
+    <a href="{{ item.url }}" class="joeve-cart-item__title">{{ item.product.title | escape }}</a>
+
+    {%- unless item.product.has_only_default_variant -%}
+      <div class="joeve-cart-item__options">
+        {%- for option in item.options_with_values -%}
+          <span>{{ option.name }} : {{ option.value }}</span>
+        {%- endfor -%}
+      </div>
+    {%- endunless -%}
+
+    {%- if item.properties.size != 0 -%}
+      <div class="joeve-cart-item__options">
+        {%- for property in item.properties -%}
+          {%- assign first_char = property.first | slice: 0 -%}
+          {%- if property.last != blank and first_char != '_' -%}
+            <span>{{ property.first }} : {{ property.last }}</span>
+          {%- endif -%}
+        {%- endfor -%}
+      </div>
+    {%- endif -%}
+
+    <div class="joeve-cart-item__price">
+      {%- if compare > item.final_price -%}
+        <s>{{ compare | money }}</s>
+      {%- endif -%}
+      <span>{{ item.final_price | money }}</span>
+    </div>
+
+    {%- for discount in item.line_level_discount_allocations -%}
+      <div class="joeve-cart-item__discount">{{ discount.discount_application.title }}</div>
+    {%- endfor -%}
+
+    <div class="joeve-cart-item__actions">
+      {% render 'quantity-2', value: item.quantity, variant: item.variant, product: item.product, is_cart: true, size: 'sm' %}
+      <div class="joeve-cart-item__remove">
+        <xo-cart-change-fallback class="joeve-cart-item__loading">
+          {% render 'loader-2' %}
+        </xo-cart-change-fallback>
+        {% render 'action-remove', icon_size: '1.7rem', icon_color: '#111111' %}
+      </div>
+    </div>
+  </div>
+</xo-product>

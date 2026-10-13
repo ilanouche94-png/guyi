@@ -1,0 +1,75 @@
+{% comment %}
+  « Complétez votre look » dans le tiroir panier.
+  Produits pris dans la collection du premier article du panier
+  (ou dans la collection choisie dans Paramètres du thème > Panier).
+{% endcomment %}
+
+{%- liquid
+  assign in_cart = ','
+  for item in cart.items
+    assign in_cart = in_cart | append: item.product_id | append: ','
+  endfor
+
+  assign source = blank
+  for item in cart.items
+    if source != blank
+      break
+    endif
+    for c in item.product.collections
+      if c.handle != 'all' and c.handle != 'frontpage' and c.products_count > 1
+        assign source = c
+        break
+      endif
+    endfor
+  endfor
+  if source == blank and settings.cart_drawer_collection != blank
+    assign source = collections[settings.cart_drawer_collection]
+  endif
+-%}
+
+{%- if source != blank -%}
+  {%- capture cards -%}
+    {%- assign shown = 0 -%}
+    {%- for p in source.products limit: 30 -%}
+      {%- if shown >= 6 -%}{%- break -%}{%- endif -%}
+      {%- assign needle = ',' | append: p.id | append: ',' -%}
+      {%- if p.available == false or in_cart contains needle -%}{%- continue -%}{%- endif -%}
+      {%- assign shown = shown | plus: 1 -%}
+      <div class="joeve-reco">
+        <a href="{{ p.url }}" class="joeve-reco__media" aria-label="{{ p.title | escape }}">
+          {%- if p.featured_image != blank -%}
+            <img src="{{ p.featured_image | image_url: width: 240 }}" alt="{{ p.featured_image.alt | default: p.title | escape }}" width="110" height="{{ 110 | divided_by: p.featured_image.aspect_ratio | round }}" loading="lazy">
+          {%- endif -%}
+        </a>
+        <div class="joeve-reco__body">
+          <a href="{{ p.url }}" class="joeve-reco__title">{{ p.title | escape }}</a>
+          <div class="joeve-reco__price">
+            {%- if p.compare_at_price > p.price -%}<s>{{ p.compare_at_price | money }}</s>{%- endif -%}
+            <span>{{ p.price | money }}</span>
+          </div>
+          <div class="joeve-reco__row">
+            {%- unless p.has_only_default_variant -%}
+              <select class="joeve-reco__select" aria-label="{{ p.options | join: ' / ' | escape }}">
+                {%- for v in p.variants -%}
+                  {%- if v.available -%}
+                    <option value="{{ v.id }}">{{ v.title | escape }}</option>
+                  {%- endif -%}
+                {%- endfor -%}
+              </select>
+            {%- endunless -%}
+            <xo-cart-add class="joeve-reco__add" xo-product-id="{{ p.first_available_variant.id }}" xo-cart-opened="false">
+              <button type="button">Ajouter</button>
+            </xo-cart-add>
+          </div>
+        </div>
+      </div>
+    {%- endfor -%}
+  {%- endcapture -%}
+
+  {%- if shown > 0 -%}
+    <div class="joeve-recos">
+      <h4 class="joeve-recos__title">Complétez votre look</h4>
+      <div class="joeve-recos__track">{{ cards }}</div>
+    </div>
+  {%- endif -%}
+{%- endif -%}

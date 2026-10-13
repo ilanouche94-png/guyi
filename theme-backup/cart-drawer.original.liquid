@@ -1,0 +1,42 @@
+{% assign title = 'sections.cart.title' | t %}
+
+{% capture drawer_content %}
+  <xo-cart-will-change xo-unique-id="xo-cart-mini-content-drawer">
+    {% liquid
+      if cart != empty
+        # ready to ship
+        render 'cart-ready-to-ship'
+        # free shipping
+        render 'cart-free-shipping-suggestion'
+        # cart items
+        for item in cart.items
+          if forloop.index < 5
+            render 'cart-mini-item', type: 'drawer', item: item, animate_enabled: true, index: forloop.index
+          else
+            render 'cart-mini-item', type: 'drawer', item: item, index: forloop.index
+          endif
+        endfor
+
+      else
+        # cart empty
+        render 'cart-empty', is_cart_page: false, icon: 'empty-cart', icon_size: '114', class: 'pt:s15 pt:s18@md pt:s20@lg'
+      endif
+    %}
+  </xo-cart-will-change>
+{% endcapture %}
+
+{% capture drawer_footer %}
+  {% render 'cart-mini-footer', type: 'drawer', button_content: button_content %}
+{% endcapture %}
+
+{% render 'modal-content',
+  header_class: 'bdb:s1 bdc:border.2 pb:s11',
+  title: title,
+  title_class: 'fz:h4',
+  content: drawer_content,
+  content_class: 'pt:s6 pb:s6',
+  footer: drawer_footer,
+  width: '53rem',
+  full_height: true,
+  is_cart: true
+%}

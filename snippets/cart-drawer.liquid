@@ -1,0 +1,79 @@
+{%- comment -%}
+  Tiroir panier Joeve (s'ouvre depuis la droite).
+  Réglages livraison : modifier les valeurs ci-dessous (en centimes).
+{%- endcomment -%}
+{%- liquid
+  assign joeve_ship_price = 390
+  assign joeve_free_from = 7000
+  assign joeve_ship_min_days = 5
+  assign joeve_ship_max_days = 8
+
+  assign remaining = joeve_free_from | minus: cart.total_price
+  assign progress = cart.total_price | times: 100 | divided_by: joeve_free_from
+  if progress > 100
+    assign progress = 100
+  endif
+
+  if cart.item_count > 1
+    assign count_label = cart.item_count | append: ' articles'
+  else
+    assign count_label = cart.item_count | append: ' article'
+  endif
+-%}
+
+{% capture title %}
+  <xo-cart-will-change xo-unique-id="joeve-cart-title"><span>Panier · {{ count_label }}</span></xo-cart-will-change>
+{% endcapture %}
+
+{% capture drawer_content %}
+  <xo-cart-will-change xo-unique-id="xo-cart-mini-content-drawer">
+    {%- if cart != empty -%}
+      <div class="joeve-cart-ship">
+        <p class="joeve-cart-ship__text">
+          {%- if remaining > 0 -%}
+            Plus que <strong>{{ remaining | money }}</strong> pour profiter de la livraison offerte
+          {%- else -%}
+            Bonne nouvelle : la <strong>livraison est offerte</strong>
+          {%- endif -%}
+        </p>
+        <span class="joeve-cart-ship__bar"><span style="width: {{ progress }}%;"></span></span>
+      </div>
+
+      <div class="joeve-cart-items">
+        {%- for item in cart.items -%}
+          {% render 'joeve-cart-item', item: item, index: forloop.index %}
+        {%- endfor -%}
+      </div>
+
+      {% render 'joeve-cart-recos' %}
+    {%- else -%}
+      <span class="joeve-cart-is-empty" hidden></span>
+      {% render 'cart-empty', is_cart_page: false, icon: 'empty-cart', icon_size: '114', class: 'pt:s15 pt:s18@md pt:s20@lg' %}
+    {%- endif -%}
+  </xo-cart-will-change>
+{% endcapture %}
+
+{% capture drawer_footer %}
+  {% render 'joeve-cart-footer',
+    joeve_ship_price: joeve_ship_price,
+    joeve_free_from: joeve_free_from,
+    joeve_ship_min_days: joeve_ship_min_days,
+    joeve_ship_max_days: joeve_ship_max_days
+  %}
+{% endcapture %}
+
+{% render 'joeve-cart-style' %}
+
+{% render 'modal-content',
+  container_class: 'joeve-cart',
+  header_class: 'joeve-cart__header',
+  title: title,
+  title_class: 'joeve-cart__title',
+  content: drawer_content,
+  content_class: 'joeve-cart__content',
+  footer: drawer_footer,
+  footer_class: 'joeve-cart__footer',
+  width: '46rem',
+  full_height: true,
+  is_cart: true
+%}
