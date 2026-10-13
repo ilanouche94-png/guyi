@@ -1,0 +1,94 @@
+{%- liquid
+  assign uid = 'joeve-line-' | append: block.id
+-%}
+
+<style>
+  .{{ uid }} {
+    display: none;
+    width: 100%;
+    padding: {{ block.settings.space_top }}px 0 {{ block.settings.space_bottom }}px;
+  }
+
+  .{{ uid }} .joeve-line__rule {
+    width: {{ block.settings.width }}%;
+    height: 0;
+    margin: 0 auto;
+    border: 0;
+    border-top: {{ block.settings.thickness }}px solid {{ block.settings.color }};
+  }
+
+  /* Visible uniquement sur téléphone */
+  @media (max-width: 749px) {
+    .{{ uid }} {
+      display: block;
+    }
+  }
+</style>
+
+<div class="{{ uid }}" {{ block.shopify_attributes }}>
+  <hr class="joeve-line__rule">
+</div>
+
+{% schema %}
+{
+  "name": "Ligne fine (téléphone)",
+  "tag": null,
+  "settings": [
+    {
+      "type": "paragraph",
+      "content": "Cette ligne s'affiche uniquement sur téléphone."
+    },
+    {
+      "type": "color",
+      "id": "color",
+      "label": "Couleur de la ligne",
+      "default": "#E2DCD5"
+    },
+    {
+      "type": "range",
+      "id": "thickness",
+      "label": "Épaisseur",
+      "min": 1,
+      "max": 4,
+      "step": 1,
+      "unit": "px",
+      "default": 1
+    },
+    {
+      "type": "range",
+      "id": "width",
+      "label": "Largeur",
+      "min": 20,
+      "max": 100,
+      "step": 5,
+      "unit": "%",
+      "default": 100
+    },
+    {
+      "type": "range",
+      "id": "space_top",
+      "label": "Espace au-dessus",
+      "min": 0,
+      "max": 60,
+      "step": 2,
+      "unit": "px",
+      "default": 16
+    },
+    {
+      "type": "range",
+      "id": "space_bottom",
+      "label": "Espace en dessous",
+      "min": 0,
+      "max": 60,
+      "step": 2,
+      "unit": "px",
+      "default": 16
+    }
+  ],
+  "presets": [
+    {
+      "name": "Ligne fine (téléphone)"
+    }
+  ]
+}
+{% endschema %}
