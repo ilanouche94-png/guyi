@@ -92,6 +92,157 @@
   {% render 'animate', cascade: true, context: block, content: content %}
 </div>
 
+{%- if block.settings.mobile_sticky and section.id contains 'main_product' -%}
+  {%- assign sticky_id = 'jof-sticky-' | append: block.id -%}
+  <style>
+    #{{ sticky_id }} {
+      display: none;
+    }
+
+    @media (max-width: 749px) {
+      /* Sur téléphone : la ligne livraison et le bouton panier passent dans la barre du bas */
+      .jof-delivery,
+      .jof-hide-mobile {
+        display: none !important;
+      }
+
+      body.jof-has-sticky {
+        padding-bottom: 11.4rem;
+      }
+
+      #{{ sticky_id }} {
+        display: block;
+        position: fixed;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        z-index: 50;
+        background: {{ block.settings.sticky_bg }};
+        font-family: inherit;
+      }
+
+      #{{ sticky_id }} .jof-sticky__band {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        min-height: 2.2rem;
+        padding: 0.3rem 1.2rem;
+        background: {{ block.settings.band_bg }};
+        color: {{ block.settings.text_color }};
+        font-size: 1.3rem;
+        line-height: 1.3;
+      }
+
+      #{{ sticky_id }} .jof-sticky__dot {
+        flex-shrink: 0;
+        width: 0.8rem;
+        height: 0.8rem;
+        border-radius: 50%;
+        background: {{ block.settings.dot_color }};
+      }
+
+      #{{ sticky_id }} .jof-sticky__inner {
+        padding: 2.5rem 1.9rem 2rem;
+      }
+
+      #{{ sticky_id }} .jof-sticky__button {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 100%;
+        height: 4.7rem;
+        padding: 0 1.6rem;
+        border: 0;
+        border-radius: 0;
+        background: {{ block.settings.button_bg }};
+        color: {{ block.settings.button_text }};
+        font-family: inherit;
+        font-size: 1.6rem;
+        font-weight: 400;
+        letter-spacing: 0.02em;
+        text-transform: none;
+        cursor: pointer;
+      }
+
+      #{{ sticky_id }} .jof-sticky__button[disabled] {
+        opacity: 0.5;
+        cursor: not-allowed;
+      }
+    }
+  </style>
+
+  <div id="{{ sticky_id }}" class="jof-sticky">
+    <div class="jof-sticky__band">
+      <span class="jof-sticky__dot" aria-hidden="true"></span>
+      <span class="jof-sticky__text">{{- block.settings.text_prefix }} {{ labels[0] }} et {{ labels[1] -}}</span>
+    </div>
+    <div class="jof-sticky__inner">
+      <button type="button" class="jof-sticky__button">{{ 'products.product.add_to_cart' | t }}</button>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      var bar = document.currentScript && document.currentScript.previousElementSibling;
+      if (!bar || !bar.classList.contains('jof-sticky')) return;
+      var section = bar.closest('.shopify-section') || document;
+
+      // Retire une ancienne barre (rechargement dans l'éditeur) puis place celle-ci dans <body>
+      document.querySelectorAll('#' + bar.id).forEach(function (el) { if (el !== bar) el.remove(); });
+      document.body.appendChild(bar);
+      document.body.classList.add('jof-has-sticky');
+
+      var button = bar.querySelector('.jof-sticky__button');
+      var text = bar.querySelector('.jof-sticky__text');
+
+      function holder() {
+        return section.querySelector('[xo-unique-id^="add-to-cart-detail-"]');
+      }
+
+      function cart() {
+        var h = holder();
+        return h && h.querySelector('xo-cart-add, .xo-add-to-cart');
+      }
+
+      function sync() {
+        var h = holder();
+        if (h && !h.classList.contains('jof-hide-mobile')) h.classList.add('jof-hide-mobile');
+        var c = cart();
+        if (c) {
+          var disabled = c.hasAttribute('xo-disabled');
+          var label = '';
+          if (disabled) {
+            var off = h.querySelector('[xo-unavailable-text]');
+            label = off ? off.getAttribute('xo-unavailable-text') : '';
+          } else {
+            var inner = c.querySelector('button, [aria-label]');
+            label = (inner && inner.getAttribute('aria-label')) || c.textContent;
+          }
+          label = (label || '').trim();
+          if (label && button.textContent !== label) button.textContent = label;
+          if (button.disabled !== disabled) button.disabled = disabled;
+        }
+        var delivery = section.querySelector('[data-jof-delivery]');
+        var value = delivery ? delivery.textContent.trim() : '';
+        if (value && text.textContent !== value) text.textContent = value;
+      }
+
+      button.addEventListener('click', function () {
+        var c = cart();
+        if (!c || c.hasAttribute('xo-disabled')) return;
+        (c.querySelector('button') || c).click();
+      });
+
+      sync();
+      var timer;
+      new MutationObserver(function () {
+        clearTimeout(timer);
+        timer = setTimeout(sync, 50);
+      }).observe(section, { subtree: true, childList: true, attributes: true, characterData: true });
+    })();
+  </script>
+{%- endif -%}
+
 <script>
   (function () {
     function addDays(start, count, business) {
@@ -182,6 +333,40 @@
       "id": "text_color",
       "label": "Couleur du texte",
       "default": "#1A1A1A"
+    },
+    {
+      "type": "header",
+      "content": "Barre en bas sur téléphone"
+    },
+    {
+      "type": "checkbox",
+      "id": "mobile_sticky",
+      "label": "Fixer la livraison et le bouton panier en bas de l'écran sur téléphone",
+      "default": true
+    },
+    {
+      "type": "color",
+      "id": "band_bg",
+      "label": "Fond de la ligne livraison",
+      "default": "#E7E0D9"
+    },
+    {
+      "type": "color",
+      "id": "sticky_bg",
+      "label": "Fond de la barre",
+      "default": "#F4EDE5"
+    },
+    {
+      "type": "color",
+      "id": "button_bg",
+      "label": "Fond du bouton",
+      "default": "#000000"
+    },
+    {
+      "type": "color",
+      "id": "button_text",
+      "label": "Texte du bouton",
+      "default": "#FFFFFF"
     },
     {
       "type": "header",
