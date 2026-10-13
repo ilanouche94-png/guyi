@@ -1,0 +1,9 @@
+name = "joeve-translator"
+main = "src/index.ts"
+compatibility_date = "2026-09-01"
+
+[vars]
+SHOP_DOMAIN = "q0uptb-wj.myshopify.com"
+
+# Secrets (à ajouter avec `npx wrangler secret put NOM`) :
+#   SHOPIFY_ADMIN_TOKEN, SHOPIFY_WEBHOOK_SECRET, ANTHROPIC_API_KEY

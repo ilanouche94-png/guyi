@@ -1,0 +1,52 @@
+# Traduction automatique des produits — Joeve Paris
+
+Dès qu'un produit est **publié** (ou modifié) dans Shopify, ce petit programme le traduit
+en **français, espagnol, néerlandais et arabe** avec Claude (Sonnet 5.5) et enregistre
+les traductions dans la boutique, environ 30 secondes plus tard.
+
+- Ne retraduit que ce qui manque ou a changé (pas de double paiement).
+- Ne touche pas aux tailles (XS, S, M…), au nom de la marque, ni au thème.
+- Coût : environ 0,05 $ par produit pour les 4 langues. Hébergement Cloudflare : gratuit.
+
+## Installation (une seule fois)
+
+### 1. Clé Claude
+1. Va sur https://console.anthropic.com → crée un compte.
+2. **Billing** → ajoute un crédit (5 à 10 $ suffisent pour commencer).
+3. **API Keys** → **Create Key** → copie la clé (elle commence par `sk-ant-`). Garde-la secrète.
+
+### 2. Accès Shopify
+1. Admin Shopify → **Paramètres** → **Applications et canaux de vente** → **Développer des applications** → **Créer une application** (nom : « Traduction auto »).
+2. **Configurer les étendues de l'API Admin** → coche : `read_products`, `read_translations`, `write_translations`, `read_locales` → Enregistrer.
+3. **Installer l'application** → copie le **jeton d'accès API Admin** (commence par `shpat_`). Il ne s'affiche qu'une fois.
+
+### 3. Mise en ligne sur Cloudflare (gratuit)
+Dans un terminal, dans ce dossier `translator/` :
+
+```bash
+npm install
+npx wrangler login                              # ouvre le navigateur, crée/connecte ton compte Cloudflare
+npx wrangler secret put ANTHROPIC_API_KEY       # colle la clé sk-ant-...
+npx wrangler secret put SHOPIFY_ADMIN_TOKEN     # colle le jeton shpat_...
+npx wrangler deploy                             # affiche l'adresse du programme, ex. https://joeve-translator.xxx.workers.dev
+```
+
+### 4. Prévenir Shopify à chaque produit
+1. Admin Shopify → **Paramètres** → **Notifications** → tout en bas **Webhooks** → **Créer un webhook**.
+2. Événement **Création de produit**, format **JSON**, URL = l'adresse de l'étape 3 → Enregistrer.
+3. Recommence avec l'événement **Mise à jour de produit**.
+4. En bas de la page, Shopify affiche une phrase « Vos webhooks seront signés avec … » suivie d'un code : copie ce code et lance
+   ```bash
+   npx wrangler secret put SHOPIFY_WEBHOOK_SECRET
+   ```
+
+C'est fini. Publie un produit test, attends 30 secondes et ouvre `joeveparis.com/fr/products/...`.
+
+## Traduire les produits déjà en ligne (facultatif, une fois)
+
+```bash
+SHOP_DOMAIN=q0uptb-wj.myshopify.com SHOPIFY_ADMIN_TOKEN=shpat_... ANTHROPIC_API_KEY=sk-ant-... npm run backfill
+```
+
+## Voir ce qui se passe
+`npx wrangler tail` affiche en direct chaque produit traduit (ou les erreurs).
