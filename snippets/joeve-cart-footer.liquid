@@ -52,7 +52,7 @@
           ></joeve-ship-dates>
         </span>
         <span class="joeve-cart-footer__ship-price">
-          {%- if shipping == 0 -%}Offerte{%- else -%}<span class="money">{{ shipping | money }}</span>{%- endif -%}
+          {%- if shipping == 0 -%}Offerte{%- else -%}<joeve-flat-price data-value="{{ shipping | divided_by: 100.0 }}">{{ shipping | money }}</joeve-flat-price>{%- endif -%}
         </span>
       </div>
 
@@ -85,6 +85,35 @@
         {%- endfor -%}
       </ul>
     {%- endif -%}
+
+    <script>
+      // Livraison : même montant (3,90) quelle que soit la devise affichée par BUCKS
+      if (!customElements.get('joeve-flat-price')) {
+        customElements.define('joeve-flat-price', class extends HTMLElement {
+          connectedCallback() {
+            var self = this;
+            var total = function () {
+              var footer = self.closest('.joeve-cart-footer');
+              return footer && footer.querySelector('.joeve-cart-footer__row--total .money');
+            };
+            var apply = function () {
+              var t = total();
+              var text = t ? t.textContent.trim() : '';
+              var match = text.match(/\d[\d\s.,]*\d|\d/);
+              if (!match) return;
+              var comma = /,\d{1,2}$/.test(match[0]);
+              var value = parseFloat(self.dataset.value).toFixed(2);
+              if (comma) value = value.replace('.', ',');
+              var next = text.replace(match[0], value);
+              if (self.textContent !== next) self.textContent = next;
+            };
+            apply();
+            var t = total();
+            if (t) new MutationObserver(apply).observe(t, { childList: true, characterData: true, subtree: true });
+          }
+        });
+      }
+    </script>
 
     <p class="joeve-cart-footer__note">Paiement sécurisé en euros, converti par votre banque</p>
     <p class="joeve-cart-footer__note">Retours sous 30 jours · Paiement sécurisé</p>
