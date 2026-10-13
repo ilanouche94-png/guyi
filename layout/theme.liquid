@@ -1,0 +1,172 @@
+<!doctype html>
+{% assign locale_rtl = 'ar,fa,he,ks,ps,sd,ur,' %}
+{% assign current_locale = localization.language.iso_code | append: ',' %}
+<html
+  {% if settings.desktop_smooth_scroll %}
+    xo-desktop-smooth-scroll="all"
+  {% endif %}
+  {% if locale_rtl contains current_locale %}
+    dir="rtl"
+  {% else %}
+    dir="ltr"
+  {% endif %}
+  class="no-js"
+  lang="{{ request.locale.iso_code }}"
+  xo-money-format="{{ shop.money_format | escape }}"
+  xo-money-with-currency-format="{{ shop.money_format | escape }}"
+>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    {% render 'joeve-auto-language' %}
+    <meta name="theme-color" content="">
+    {% comment %}theme-check-disable AssetPreload{% endcomment %}
+    <link rel="preload" href="{{ 'xo-critical.min.js' | asset_url }}" as="script" fetchpriority="high">
+    {% comment %}theme-check-enable AssetPreload{% endcomment %}
+    <link rel="canonical" href="{{ canonical_url }}">
+    <link
+      rel="preconnect"
+      href="https://cdn.shopify.com"
+      crossorigin
+    >
+
+    {% render 'xotiny-theme' %}
+
+    {%- if settings.favicon != blank -%}
+      <link
+        rel="icon"
+        type="image/png"
+        href="{{ settings.favicon | image_url: width: 32, height: 32 }}"
+      >
+    {%- endif -%}
+
+    {%- unless settings.type_heading_font.system? and settings.type_body_font.system? -%}
+      <link
+        rel="preconnect"
+        href="https://fonts.shopifycdn.com"
+        crossorigin
+      >
+    {%- endunless -%}
+
+    {% render 'page-title' %}
+
+    {% if page_description %}
+      <meta name="description" content="{{ page_description | escape }}">
+    {% endif %}
+
+    {% render 'meta-tags' %}
+
+    {{ content_for_header }}
+
+    {% render 'settings-adapter' %}
+
+    {% render 'scripts' %}
+
+    {{ 'styles.css' | asset_url | stylesheet_tag }}
+    {{ 'xo-webcomponents.min.css' | asset_url | stylesheet_tag }}
+
+    {%- unless settings.type_body_font.system? -%}
+      {% comment %}theme-check-disable AssetPreload{% endcomment %}
+      <link rel="preload" as="font" href="{{ settings.type_body_font | font_url }}" type="font/woff2" crossorigin>
+      {% comment %}theme-check-enable AssetPreload{% endcomment %}
+    {%- endunless -%}
+    {%- unless settings.type_heading_font.system? -%}
+      {% comment %}theme-check-disable AssetPreload{% endcomment %}
+      <link rel="preload" as="font" href="{{ settings.type_heading_font | font_url }}" type="font/woff2" crossorigin>
+      {% comment %}theme-check-enable AssetPreload{% endcomment %}
+    {%- endunless -%}
+
+    <script>
+      document.documentElement.className = document.documentElement.className.replace('no-js', 'js');
+      if (Shopify.designMode) {
+        document.documentElement.classList.add('shopify-design-mode');
+      }
+    </script>
+
+    <script src="{{ 'xo-critical.min.js' | asset_url }}" defer fetchpriority="high"></script>
+    <script src="{{ 'xo-webcomponents.min.js' | asset_url }}" defer></script>
+    <script src='{{ 'main.js' | asset_url }}' defer type="module"></script>
+  </head>
+
+  <body
+    class="gradient{% if settings.root_class_name %} {{ settings.root_class_name }}{% endif %}{% if settings.corner_radius %} bdrs-{{ settings.corner_radius }}{% endif %}"
+    {% if request.design_mode %}
+      xo-design-mode
+    {% endif %}
+    {% if template.name == 'index' %}
+      xo-home
+    {% elsif template.name == 'collection' %}
+      xo-collection
+    {% elsif template.name == 'product' %}
+      xo-product
+    {% endif %}
+  >
+    <div id="xo-root">
+      {% render 'lcp' %}
+      <button class="xo-skip-to-content xo-visually-hidden xo-reset mt:s6 ml:s6 bgc:primary c:button-text pt:s3 pb:s3 pl:s6 pr:s6">
+        {{ 'accessibility.skip_to_text' | t }}
+      </button>
+      {% comment %} header {% endcomment %}
+      {% sections 'header-group' %}
+      {% comment %} main {% endcomment %}
+      <main
+        id="xo-main-content"
+        class="content-for-layout focus-none"
+        role="main"
+        tabindex="-1"
+      >
+        {{ content_for_layout }}
+      </main>
+      {% comment %} footer {% endcomment %}
+      {% sections 'footer-group' %}
+      {% comment %} overlay {% endcomment %}
+      {% sections 'overlay-group' %}
+      {% comment %} popups {% endcomment %}
+      {% sections 'popup-group' %}
+      {% comment %} feature {% endcomment %}
+      {% sections 'feature-group' %}
+
+      <ul hidden>
+        <li id="a11y-refresh-page-message">{{ 'accessibility.refresh_page' | t }}</li>
+        <li id="a11y-new-window-message">{{ 'accessibility.link_messages.new_window' | t }}</li>
+      </ul>
+    </div>
+
+    <xo-turbo-progress-bar></xo-turbo-progress-bar>
+
+    <xo-cart-fly
+      class="pe:none z:99999 bd:s1 bdc:border.2 bgc:primary bgi:var(--product-featured-image) bgz:cover bdrs:s0 bdrs:50%/xo-flying- trs:border-radius_var(--xo-speed)_linear"
+      xo-size-map-start="{ width: 'height' }"
+    ></xo-cart-fly>
+
+    <script>
+      window.shopUrl = '{{ request.origin }}';
+      window.routes = {
+        cart_add_url: '{{ routes.cart_add_url }}',
+        cart_change_url: '{{ routes.cart_change_url }}',
+        cart_update_url: '{{ routes.cart_update_url }}',
+        cart_url: '{{ routes.cart_url }}',
+        predictive_search_url: '{{ routes.predictive_search_url }}',
+      };
+
+      window.cartStrings = {
+        error: `{{ 'sections.cart.cart_error' | t }}`,
+        quantityError: `{{ 'sections.cart.cart_quantity_error_html' | t: quantity: '[quantity]' }}`,
+      };
+
+      window.variantStrings = {
+        addToCart: `{{ 'products.product.add_to_cart' | t }}`,
+        soldOut: `{{ 'products.product.sold_out' | t }}`,
+        unavailable: `{{ 'products.product.unavailable' | t }}`,
+      };
+
+      window.accessibilityStrings = {
+        imageAvailable: `{{ 'products.product.media.image_available' | t: index: '[index]' }}`,
+        shareSuccess: `{{ 'general.share.success_message' | t }}`,
+        pauseSlideshow: `{{ 'sections.slideshow.pause_slideshow' | t }}`,
+        playSlideshow: `{{ 'sections.slideshow.play_slideshow' | t }}`,
+      };
+    </script>
+  </body>
+</html>
