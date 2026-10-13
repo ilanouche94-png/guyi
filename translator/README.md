@@ -1,6 +1,6 @@
 # Traduction automatique des produits — Joeve Paris
 
-Dès qu'un produit est **publié** (ou modifié) dans Shopify, ce petit programme le traduit
+Dès qu'un produit est **publié sur la boutique en ligne** (statut Actif + visible sur la boutique), ou modifié une fois publié, ce petit programme le traduit
 en **français, espagnol, néerlandais et arabe** avec Claude (Sonnet 5.5) et enregistre
 les traductions dans la boutique, environ 30 secondes plus tard.
 

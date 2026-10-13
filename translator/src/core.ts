@@ -99,6 +99,7 @@ const PRODUCT_QUERY = `
 query ($id: ID!) {
   product(id: $id) {
     status
+    onlineStoreUrl
     options { id optionValues { id } }
   }
 }`;
@@ -132,11 +133,16 @@ type RawNode = {
 
 async function loadResources(env: Env, productGid: string): Promise<Resource[] | null> {
   const { product } = await shopify<{
-    product: { status: string; options: { id: string; optionValues: { id: string }[] }[] } | null;
+    product: {
+      status: string;
+      onlineStoreUrl: string | null;
+      options: { id: string; optionValues: { id: string }[] }[];
+    } | null;
   }>(env, PRODUCT_QUERY, { id: productGid });
 
-  // On ne traduit que les produits publiés (pas les brouillons en cours d'écriture).
-  if (!product || product.status !== "ACTIVE") return null;
+  // On ne traduit qu'au moment où le produit est visible sur la boutique en ligne
+  // (actif + publié) : avant, la fiche est encore en cours d'écriture.
+  if (!product || product.status !== "ACTIVE" || !product.onlineStoreUrl) return null;
 
   const ids = [productGid];
   for (const option of product.options) {

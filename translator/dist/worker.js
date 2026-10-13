@@ -20,6 +20,7 @@ new Anthropic({ apiKey, dangerouslyAllowBrowser: true });
 query ($id: ID!) {
   product(id: $id) {
     status
+    onlineStoreUrl
     options { id optionValues { id } }
   }
 }`,bf=`
@@ -39,7 +40,7 @@ mutation ($id: ID!, $t: [TranslationInput!]!) {
   translationsRegister(resourceId: $id, translations: $t) {
     userErrors { field message }
   }
-}`;async function kf(r,n){let{product:e}=await ta(r,wf,{id:n});if(!e||e.status!=="ACTIVE")return null;let t=[n];for(let i of e.options)t.push(i.id,...i.optionValues.map(o=>o.id));let{translatableResourcesByIds:s}=await ta(r,bf,{ids:t});return s.nodes.map(i=>{let o=i.resourceId===n,l=i.translatableContent.filter(d=>d.value&&d.digest&&d.value.trim()!=="").filter(d=>o?_f.has(d.key):d.key==="name").filter(d=>o||!gf.test(d.value.trim())).map(d=>({key:d.key,value:d.value,digest:d.digest})),f={};for(let d of ea)f[d]=new Map((i[d]??[]).map(y=>[y.key,{value:y.value??"",outdated:y.outdated}]));return{id:i.resourceId,content:l,translations:f}})}a(kf,"loadResources");function Sf(r,n){let e=[];for(let t of r)for(let s of t.content){let i=t.translations[n].get(s.key);(!i||i.outdated||i.value.trim()==="")&&e.push({resourceId:t.id,key:s.key,value:s.value,digest:s.digest})}return e}a(Sf,"missingJobs");var vf=`You translate product content for Joeve Paris, a Parisian women's fashion brand.
+}`;async function kf(r,n){let{product:e}=await ta(r,wf,{id:n});if(!e||e.status!=="ACTIVE"||!e.onlineStoreUrl)return null;let t=[n];for(let i of e.options)t.push(i.id,...i.optionValues.map(o=>o.id));let{translatableResourcesByIds:s}=await ta(r,bf,{ids:t});return s.nodes.map(i=>{let o=i.resourceId===n,l=i.translatableContent.filter(d=>d.value&&d.digest&&d.value.trim()!=="").filter(d=>o?_f.has(d.key):d.key==="name").filter(d=>o||!gf.test(d.value.trim())).map(d=>({key:d.key,value:d.value,digest:d.digest})),f={};for(let d of ea)f[d]=new Map((i[d]??[]).map(y=>[y.key,{value:y.value??"",outdated:y.outdated}]));return{id:i.resourceId,content:l,translations:f}})}a(kf,"loadResources");function Sf(r,n){let e=[];for(let t of r)for(let s of t.content){let i=t.translations[n].get(s.key);(!i||i.outdated||i.value.trim()==="")&&e.push({resourceId:t.id,key:s.key,value:s.value,digest:s.digest})}return e}a(Sf,"missingJobs");var vf=`You translate product content for Joeve Paris, a Parisian women's fashion brand.
 Write the way a native-speaking fashion copywriter would: natural, elegant and concise, never word-for-word.
 Rules:
 - Keep all HTML tags, attributes, line breaks and emoji exactly as in the source; translate only the visible text.
