@@ -44,14 +44,14 @@
       <div class="joeve-cart-footer__row">
         <span>
           {{ 'joeve.cart.shipping' | t }} <small>{{ 'joeve.cart.tracked' | t }}</small>
-          <joeve-ship-dates
+          <joeve-ship-dates-i18n
             class="joeve-cart-footer__dates"
             data-min="{{ joeve_ship_min_days }}"
             data-max="{{ joeve_ship_max_days }}"
             data-business="true"
             data-template="{{ 'joeve.cart.delivered_between' | t | escape }}"
             data-locale="{{ request.locale.iso_code }}"
-          ></joeve-ship-dates>
+          ></joeve-ship-dates-i18n>
         </span>
         <span class="joeve-cart-footer__ship-price">
           {%- if shipping == 0 -%}{{ 'joeve.cart.free' | t }}{%- else -%}<joeve-flat-price data-value="{{ shipping | divided_by: 100.0 }}">{{ shipping | money }}</joeve-flat-price>{%- endif -%}
@@ -89,6 +89,33 @@
     {%- endif -%}
 
     <script>
+      // Dates de livraison dans la langue du visiteur (texte : locales > joeve.cart.delivered_between)
+      if (!customElements.get('joeve-ship-dates-i18n')) {
+        customElements.define('joeve-ship-dates-i18n', class extends HTMLElement {
+          connectedCallback() {
+            var min = parseInt(this.dataset.min, 10) || 0;
+            var max = parseInt(this.dataset.max, 10) || min;
+            var business = this.dataset.business === 'true';
+            var locale = this.dataset.locale || document.documentElement.lang || 'en';
+            var add = function (days) {
+              var d = new Date();
+              if (business) {
+                var added = 0;
+                while (added < days) {
+                  d.setDate(d.getDate() + 1);
+                  if (d.getDay() !== 0 && d.getDay() !== 6) added++;
+                }
+              } else {
+                d.setDate(d.getDate() + days);
+              }
+              return d.toLocaleDateString(locale, { weekday: 'long', day: 'numeric', month: 'long' });
+            };
+            var template = this.dataset.template || '[from] – [to]';
+            this.textContent = template.replace('[from]', add(min)).replace('[to]', add(max));
+          }
+        });
+      }
+
       // Livraison : même montant (3,90) quelle que soit la devise affichée par BUCKS
       if (!customElements.get('joeve-flat-price')) {
         customElements.define('joeve-flat-price', class extends HTMLElement {
