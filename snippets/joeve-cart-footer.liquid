@@ -31,17 +31,6 @@
   assign grand_total = cart.total_price | plus: shipping
 -%}
 
-<style>
-  .joeve-cart-footer__ship-price {
-    flex-shrink: 0;
-    white-space: nowrap;
-  }
-
-  .joeve-cart-footer__dates:empty {
-    display: none;
-  }
-</style>
-
 <div class="joeve-cart-footer">
   <xo-cart-will-change xo-unique-id="xo-cart-mini-footer-drawer">
     {%- if cart != empty -%}
@@ -80,10 +69,6 @@
   <div class="joeve-cart-footer__static">
     <form action="{{ routes.cart_url }}" method="post" class="joeve-cart-footer__form">
       <button type="submit" name="checkout" class="joeve-cart-footer__checkout">
-        <svg width="14" height="16" viewBox="0 0 14 16" fill="none" aria-hidden="true">
-          <rect x="1" y="7" width="12" height="8" rx="1.2" stroke="currentColor" stroke-width="1.5"/>
-          <path d="M4 7V4.6a3 3 0 0 1 6 0V7" stroke="currentColor" stroke-width="1.5"/>
-        </svg>
         <span>Commander</span>
       </button>
     </form>

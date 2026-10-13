@@ -10,6 +10,11 @@
   if item.original_price > compare
     assign compare = item.original_price
   endif
+
+  assign details = ''
+  unless item.product.has_only_default_variant
+    assign details = item.options_with_values | map: 'value' | join: ' - '
+  endunless
 -%}
 
 <xo-product
@@ -31,37 +36,29 @@
   </a>
 
   <div class="joeve-cart-item__info">
-    <a href="{{ item.url }}" class="joeve-cart-item__title">{{ item.product.title | escape }}</a>
-
-    {%- unless item.product.has_only_default_variant -%}
-      <div class="joeve-cart-item__options">
-        {%- for option in item.options_with_values -%}
-          <span>{{ option.name }} : {{ option.value }}</span>
-        {%- endfor -%}
-      </div>
-    {%- endunless -%}
-
-    {%- if item.properties.size != 0 -%}
-      <div class="joeve-cart-item__options">
+    <div class="joeve-cart-item__top">
+      <div class="joeve-cart-item__text">
+        <a href="{{ item.url }}" class="joeve-cart-item__title">{{ item.product.title | escape }}</a>
+        {%- if details != blank -%}
+          <span class="joeve-cart-item__options">{{ details }}</span>
+        {%- endif -%}
         {%- for property in item.properties -%}
           {%- assign first_char = property.first | slice: 0 -%}
           {%- if property.last != blank and first_char != '_' -%}
-            <span>{{ property.first }} : {{ property.last }}</span>
+            <span class="joeve-cart-item__options">{{ property.first }} : {{ property.last }}</span>
           {%- endif -%}
         {%- endfor -%}
+        {%- for discount in item.line_level_discount_allocations -%}
+          <span class="joeve-cart-item__discount">{{ discount.discount_application.title }}</span>
+        {%- endfor -%}
       </div>
-    {%- endif -%}
-
-    <div class="joeve-cart-item__price">
-      {%- if compare > item.final_price -%}
-        <s>{{ compare | money }}</s>
-      {%- endif -%}
-      <span>{{ item.final_price | money }}</span>
+      <div class="joeve-cart-item__price">
+        <span>{{ item.final_price | money }}</span>
+        {%- if compare > item.final_price -%}
+          <s>{{ compare | money }}</s>
+        {%- endif -%}
+      </div>
     </div>
-
-    {%- for discount in item.line_level_discount_allocations -%}
-      <div class="joeve-cart-item__discount">{{ discount.discount_application.title }}</div>
-    {%- endfor -%}
 
     <div class="joeve-cart-item__actions">
       {% render 'quantity-2', value: item.quantity, variant: item.variant, product: item.product, is_cart: true, size: 'sm' %}
@@ -69,7 +66,11 @@
         <xo-cart-change-fallback class="joeve-cart-item__loading">
           {% render 'loader-2' %}
         </xo-cart-change-fallback>
-        {% render 'action-remove', icon_size: '1.7rem', icon_color: '#111111' %}
+        <xo-cart-remove class="joeve-cart-item__x" tabindex="0" role="button" aria-label="{{ 'sections.cart.delete' | t }}">
+          <svg width="18" height="18" viewBox="0 0 18 18" fill="none" aria-hidden="true">
+            <path d="M2 2l14 14M16 2L2 16" stroke="currentColor" stroke-width="1.3"/>
+          </svg>
+        </xo-cart-remove>
       </div>
     </div>
   </div>
