@@ -85,9 +85,10 @@
     right: 0;
     bottom: 0;
     box-sizing: border-box;
-    width: {{ block.settings.width_desktop }}%;
+    width: {{ block.settings.panel_width_desktop }}%;
     overflow-y: auto;
-    padding: 9rem 10% 6rem;
+    padding: 13rem calc({{ block.settings.panel_width_desktop }}vw * 0.17) 6rem;
+    font-family: inherit;
     background: {{ block.settings.bg_color }};
     color: {{ block.settings.text_color }};
     transform: translateX(100%);
@@ -100,10 +101,10 @@
 
   #{{ uid }} .joeve-drawer__close {
     position: absolute;
-    top: 2.4rem;
+    top: 2.2rem;
     right: 2.4rem;
-    width: 3.2rem;
-    height: 3.2rem;
+    width: 2.6rem;
+    height: 2.6rem;
     padding: 0;
     border: 0;
     background: transparent;
@@ -127,6 +128,10 @@
     transform: rotate(-45deg);
   }
 
+  #{{ uid }} .joeve-drawer__item[hidden] {
+    display: none !important;
+  }
+
   #{{ uid }} .joeve-drawer__item {
     border-bottom: 1px solid {{ block.settings.line_color }};
   }
@@ -135,9 +140,10 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 2rem 0;
-    font-size: 1.7rem;
-    letter-spacing: 0.02em;
+    padding: 1.4rem 0;
+    font-size: 1.5rem;
+    font-weight: 400;
+    letter-spacing: 0.03em;
     list-style: none;
     cursor: pointer;
   }
@@ -147,20 +153,21 @@
   }
 
   #{{ uid }} .joeve-drawer__content {
-    padding: 0 0 2.4rem;
-    font-size: 1.5rem;
-    line-height: 1.6;
+    padding: 0.4rem 0 1.8rem;
+    font-size: 1.35rem;
+    font-weight: 300;
+    line-height: 1.55;
   }
 
   #{{ uid }} .joeve-drawer__content ul {
     margin: 0;
-    padding-left: 2.4rem;
+    padding-left: 3.6rem;
     list-style: disc;
   }
 
   #{{ uid }} .joeve-drawer__content li {
-    padding-left: 1rem;
-    margin-bottom: 0.4rem;
+    padding-left: 0.6rem;
+    margin-bottom: 0;
   }
 
   #{{ uid }} .joeve-drawer__content p {
@@ -249,8 +256,11 @@
     document.body.appendChild(drawer);
 
     function open(index) {
+      // Seule la rubrique cliquée est affichée dans le panneau
       drawer.querySelectorAll('.joeve-drawer__item').forEach(function (item) {
-        item.open = item.getAttribute('data-joeve-index') === String(index);
+        var match = item.getAttribute('data-joeve-index') === String(index);
+        item.hidden = !match;
+        item.open = match;
       });
       drawer.classList.add('is-open');
       drawer.setAttribute('aria-hidden', 'false');
@@ -373,13 +383,13 @@
     },
     {
       "type": "range",
-      "id": "width_desktop",
+      "id": "panel_width_desktop",
       "label": "Largeur du panneau sur ordinateur",
-      "min": 30,
+      "min": 25,
       "max": 100,
-      "step": 5,
+      "step": 1,
       "unit": "%",
-      "default": 60
+      "default": 41
     },
     {
       "type": "range",
