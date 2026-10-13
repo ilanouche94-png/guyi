@@ -240,27 +240,26 @@
     background: #ffffff;
   }
 
-  /* Compléter votre look */
+  /* Complétez votre look */
   .joeve-recos {
-    padding: 2.6rem 0 2.6rem 2rem;
-    background: #f6f2ee;
+    padding: 2.2rem 0 2rem 2rem;
   }
 
   .joeve-recos__title {
-    margin: 0 0 2.2rem;
-    font-size: 1.6rem;
-    font-weight: 400;
-    letter-spacing: 0;
+    margin: 0 0 1.4rem;
+    font-size: 1.5rem;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
     color: #111111;
   }
 
   .joeve-recos__track {
     display: flex;
-    gap: 1.6rem;
+    gap: 1.2rem;
     padding-right: 2rem;
     overflow-x: auto;
     scroll-snap-type: x mandatory;
-    -webkit-overflow-scrolling: touch;
     scrollbar-width: none;
   }
 
@@ -270,21 +269,17 @@
 
   .joeve-reco {
     display: flex;
-    flex-direction: column;
-    gap: 0.4rem;
-    flex: 0 0 38%;
-    min-width: 0;
-    color: #111111;
-    text-decoration: none;
+    gap: 1.2rem;
+    flex: 0 0 86%;
+    padding: 1.2rem;
+    border-radius: 0.8rem;
+    background: #f4ede6;
     scroll-snap-align: start;
   }
 
   .joeve-reco__media {
-    display: block;
-    aspect-ratio: 4 / 5;
-    margin-bottom: 0.6rem;
-    background: #ebe6e1;
-    overflow: hidden;
+    flex: 0 0 8.4rem;
+    width: 8.4rem;
   }
 
   .joeve-reco__media img {
@@ -292,25 +287,84 @@
     width: 100%;
     height: 100%;
     object-fit: cover;
+    border-radius: 0.4rem;
+  }
+
+  .joeve-reco__body {
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+    flex: 1;
+    min-width: 0;
   }
 
   .joeve-reco__title {
     overflow: hidden;
-    font-size: 1.3rem;
-    font-weight: 400;
-    line-height: 1.3;
+    font-size: 1.35rem;
+    line-height: 1.35;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: #111111;
+    text-decoration: none;
     text-overflow: ellipsis;
     white-space: nowrap;
   }
 
   .joeve-reco__price {
-    font-size: 1.3rem;
-    color: #555555;
+    display: flex;
+    gap: 0.6rem;
+    align-items: baseline;
+    font-size: 1.4rem;
   }
 
   .joeve-reco__price s {
-    margin-left: 0.4rem;
-    color: #8c1c16;
+    color: #8a8a8a;
+  }
+
+  .joeve-reco__price span {
+    font-weight: 600;
+  }
+
+  .joeve-reco__row {
+    display: flex;
+    gap: 0.8rem;
+    margin-top: auto;
+  }
+
+  .joeve-reco__select {
+    flex: 1;
+    min-width: 0;
+    height: 3.8rem;
+    padding: 0 1rem;
+    border: 1px solid #d6d6d6;
+    border-radius: 0;
+    background: #ffffff;
+    font-size: 1.3rem;
+    color: #111111;
+  }
+
+  .joeve-reco__add {
+    display: block;
+    flex-shrink: 0;
+  }
+
+  .joeve-reco__add button {
+    height: 3.8rem;
+    padding: 0 1.6rem;
+    border: 0;
+    border-radius: 0;
+    background: #000000;
+    color: #ffffff;
+    font-size: 1.25rem;
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    cursor: pointer;
+  }
+
+  .joeve-reco__add[xo-loading] button {
+    opacity: 0.5;
+    pointer-events: none;
   }
 
   /* Bas du panier */
@@ -465,5 +519,13 @@
         }
       );
     }
+
+    // Choix de la taille dans « Complétez votre look »
+    document.addEventListener('change', function (event) {
+      var select = event.target;
+      if (!select.matches || !select.matches('.joeve-reco__select')) return;
+      var add = select.closest('.joeve-reco').querySelector('.joeve-reco__add');
+      if (add) add.setAttribute('xo-product-id', select.value);
+    });
   })();
 </script>
