@@ -1,0 +1,404 @@
+{%- liquid
+  assign product = block.settings.product
+  assign uid = 'joeve-drawer-' | append: block.id
+-%}
+
+<style>
+  .{{ uid }}-rows {
+    width: 100%;
+    border-top: 1px solid {{ block.settings.line_color }};
+  }
+
+  .{{ uid }}-rows .joeve-drawer__row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    padding: 1.8rem 0;
+    border: 0;
+    border-bottom: 1px solid {{ block.settings.line_color }};
+    background: transparent;
+    color: {{ block.settings.text_color }};
+    font: inherit;
+    font-size: 1.6rem;
+    letter-spacing: 0.02em;
+    text-align: left;
+    cursor: pointer;
+  }
+
+  .joeve-drawer__plus {
+    position: relative;
+    flex-shrink: 0;
+    width: 1.4rem;
+    height: 1.4rem;
+  }
+
+  .joeve-drawer__plus::before,
+  .joeve-drawer__plus::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 0;
+    width: 100%;
+    height: 1px;
+    background: currentColor;
+    transition: transform 0.25s ease;
+  }
+
+  .joeve-drawer__plus::after {
+    transform: rotate(90deg);
+  }
+
+  .joeve-drawer__item[open] .joeve-drawer__plus::after {
+    transform: rotate(0deg);
+  }
+
+  /* Panneau qui glisse depuis la droite */
+  #{{ uid }} {
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    visibility: hidden;
+    pointer-events: none;
+  }
+
+  #{{ uid }}.is-open {
+    visibility: visible;
+    pointer-events: auto;
+  }
+
+  #{{ uid }} .joeve-drawer__overlay {
+    position: absolute;
+    inset: 0;
+    background: rgb(0 0 0 / 0.45);
+    opacity: 0;
+    transition: opacity 0.4s ease;
+  }
+
+  #{{ uid }}.is-open .joeve-drawer__overlay {
+    opacity: 1;
+  }
+
+  #{{ uid }} .joeve-drawer__panel {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    box-sizing: border-box;
+    width: {{ block.settings.width_desktop }}%;
+    overflow-y: auto;
+    padding: 9rem 10% 6rem;
+    background: {{ block.settings.bg_color }};
+    color: {{ block.settings.text_color }};
+    transform: translateX(100%);
+    transition: transform 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  #{{ uid }}.is-open .joeve-drawer__panel {
+    transform: translateX(0);
+  }
+
+  #{{ uid }} .joeve-drawer__close {
+    position: absolute;
+    top: 2.4rem;
+    right: 2.4rem;
+    width: 3.2rem;
+    height: 3.2rem;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: inherit;
+    cursor: pointer;
+  }
+
+  #{{ uid }} .joeve-drawer__close::before,
+  #{{ uid }} .joeve-drawer__close::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 15%;
+    width: 70%;
+    height: 1.5px;
+    background: currentColor;
+    transform: rotate(45deg);
+  }
+
+  #{{ uid }} .joeve-drawer__close::after {
+    transform: rotate(-45deg);
+  }
+
+  #{{ uid }} .joeve-drawer__item {
+    border-bottom: 1px solid {{ block.settings.line_color }};
+  }
+
+  #{{ uid }} .joeve-drawer__item summary {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 2rem 0;
+    font-size: 1.7rem;
+    letter-spacing: 0.02em;
+    list-style: none;
+    cursor: pointer;
+  }
+
+  #{{ uid }} .joeve-drawer__item summary::-webkit-details-marker {
+    display: none;
+  }
+
+  #{{ uid }} .joeve-drawer__content {
+    padding: 0 0 2.4rem;
+    font-size: 1.5rem;
+    line-height: 1.6;
+  }
+
+  #{{ uid }} .joeve-drawer__content ul {
+    margin: 0;
+    padding-left: 2.4rem;
+    list-style: disc;
+  }
+
+  #{{ uid }} .joeve-drawer__content li {
+    padding-left: 1rem;
+    margin-bottom: 0.4rem;
+  }
+
+  #{{ uid }} .joeve-drawer__content p {
+    margin: 0 0 1rem;
+  }
+
+  #{{ uid }} .joeve-drawer__content > :last-child {
+    margin-bottom: 0;
+  }
+
+  @media (max-width: 749px) {
+    #{{ uid }} .joeve-drawer__panel {
+      width: {{ block.settings.width_mobile }}%;
+      padding: 7rem 2.4rem 4rem;
+    }
+
+    #{{ uid }} .joeve-drawer__close {
+      top: 1.6rem;
+      right: 1.6rem;
+    }
+  }
+
+  html.joeve-drawer-lock,
+  html.joeve-drawer-lock body {
+    overflow: hidden;
+  }
+</style>
+
+{%- capture items -%}
+  {%- if block.settings.show_description and product.description != blank -%}
+    <details class="joeve-drawer__item" data-joeve-index="0">
+      <summary>{{ block.settings.description_title | escape }}<span class="joeve-drawer__plus" aria-hidden="true"></span></summary>
+      <div class="joeve-drawer__content">{{ product.description }}</div>
+    </details>
+  {%- endif -%}
+  {%- if block.settings.item_2_title != blank -%}
+    <details class="joeve-drawer__item" data-joeve-index="1">
+      <summary>{{ block.settings.item_2_title | escape }}<span class="joeve-drawer__plus" aria-hidden="true"></span></summary>
+      <div class="joeve-drawer__content">{{ block.settings.item_2_content }}</div>
+    </details>
+  {%- endif -%}
+  {%- if block.settings.item_3_title != blank -%}
+    <details class="joeve-drawer__item" data-joeve-index="2">
+      <summary>{{ block.settings.item_3_title | escape }}<span class="joeve-drawer__plus" aria-hidden="true"></span></summary>
+      <div class="joeve-drawer__content">{{ block.settings.item_3_content }}</div>
+    </details>
+  {%- endif -%}
+{%- endcapture -%}
+
+<div class="{{ uid }}-rows" {{ block.shopify_attributes }}>
+  {%- if block.settings.show_description and product.description != blank -%}
+    <button type="button" class="joeve-drawer__row" data-joeve-open="{{ uid }}" data-joeve-index="0">
+      {{ block.settings.description_title | escape }}<span class="joeve-drawer__plus" aria-hidden="true"></span>
+    </button>
+  {%- endif -%}
+  {%- if block.settings.item_2_title != blank -%}
+    <button type="button" class="joeve-drawer__row" data-joeve-open="{{ uid }}" data-joeve-index="1">
+      {{ block.settings.item_2_title | escape }}<span class="joeve-drawer__plus" aria-hidden="true"></span>
+    </button>
+  {%- endif -%}
+  {%- if block.settings.item_3_title != blank -%}
+    <button type="button" class="joeve-drawer__row" data-joeve-open="{{ uid }}" data-joeve-index="2">
+      {{ block.settings.item_3_title | escape }}<span class="joeve-drawer__plus" aria-hidden="true"></span>
+    </button>
+  {%- endif -%}
+</div>
+
+<div id="{{ uid }}" class="joeve-drawer" aria-hidden="true">
+  <div class="joeve-drawer__overlay" data-joeve-close></div>
+  <div class="joeve-drawer__panel" role="dialog" aria-modal="true">
+    <button type="button" class="joeve-drawer__close" data-joeve-close aria-label="Fermer"></button>
+    {{ items }}
+  </div>
+</div>
+
+<script>
+  (function () {
+    var drawer = document.currentScript && document.currentScript.previousElementSibling;
+    if (!drawer || !drawer.classList.contains('joeve-drawer')) return;
+
+    // Retire une ancienne copie (rechargement dans l'éditeur) puis place le panneau
+    // directement dans <body> pour qu'il couvre bien tout l'écran.
+    document.querySelectorAll('#' + drawer.id).forEach(function (el) {
+      if (el !== drawer) el.remove();
+    });
+    document.body.appendChild(drawer);
+
+    function open(index) {
+      drawer.querySelectorAll('.joeve-drawer__item').forEach(function (item) {
+        item.open = item.getAttribute('data-joeve-index') === String(index);
+      });
+      drawer.classList.add('is-open');
+      drawer.setAttribute('aria-hidden', 'false');
+      document.documentElement.classList.add('joeve-drawer-lock');
+    }
+
+    function close() {
+      drawer.classList.remove('is-open');
+      drawer.setAttribute('aria-hidden', 'true');
+      document.documentElement.classList.remove('joeve-drawer-lock');
+    }
+
+    if (!window.__joeveDrawerBound) {
+      window.__joeveDrawerBound = true;
+      document.addEventListener('click', function (event) {
+        var trigger = event.target.closest('[data-joeve-open]');
+        if (trigger) {
+          var target = document.getElementById(trigger.getAttribute('data-joeve-open'));
+          if (target && target.__joeveOpen) target.__joeveOpen(trigger.getAttribute('data-joeve-index'));
+          return;
+        }
+        var closer = event.target.closest('[data-joeve-close]');
+        if (closer) {
+          var d = closer.closest('.joeve-drawer');
+          if (d && d.__joeveClose) d.__joeveClose();
+        }
+      });
+      document.addEventListener('keydown', function (event) {
+        if (event.key !== 'Escape') return;
+        document.querySelectorAll('.joeve-drawer.is-open').forEach(function (d) {
+          if (d.__joeveClose) d.__joeveClose();
+        });
+      });
+    }
+
+    drawer.__joeveOpen = open;
+    drawer.__joeveClose = close;
+  })();
+</script>
+
+{% schema %}
+{
+  "name": "Description en panneau",
+  "tag": null,
+  "settings": [
+    {
+      "type": "product",
+      "id": "product",
+      "label": "Produit"
+    },
+    {
+      "type": "header",
+      "content": "Description"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_description",
+      "label": "Afficher la description du produit",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "description_title",
+      "label": "Titre",
+      "default": "Description"
+    },
+    {
+      "type": "header",
+      "content": "Rubrique 2"
+    },
+    {
+      "type": "text",
+      "id": "item_2_title",
+      "label": "Titre",
+      "info": "Laisse vide pour masquer cette rubrique.",
+      "default": "30-Day Easy Returns"
+    },
+    {
+      "type": "richtext",
+      "id": "item_2_content",
+      "label": "Contenu",
+      "default": "<p>If you’re not completely satisfied with your purchase, you may return eligible items within <strong>30 days of delivery</strong> for a refund or store credit.</p><p>Items must be unworn, unused, and returned in their original condition with all tags attached.</p><p>Please note: For hygiene reasons, lingerie and earrings cannot be returned unless they are defective or faulty.</p>"
+    },
+    {
+      "type": "header",
+      "content": "Rubrique 3"
+    },
+    {
+      "type": "text",
+      "id": "item_3_title",
+      "label": "Titre",
+      "info": "Laisse vide pour masquer cette rubrique."
+    },
+    {
+      "type": "richtext",
+      "id": "item_3_content",
+      "label": "Contenu"
+    },
+    {
+      "type": "header",
+      "content": "Apparence"
+    },
+    {
+      "type": "color",
+      "id": "bg_color",
+      "label": "Fond du panneau",
+      "default": "#F4EDE6"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Couleur du texte",
+      "default": "#111111"
+    },
+    {
+      "type": "color",
+      "id": "line_color",
+      "label": "Couleur des lignes",
+      "default": "#E2DCD5"
+    },
+    {
+      "type": "range",
+      "id": "width_desktop",
+      "label": "Largeur du panneau sur ordinateur",
+      "min": 30,
+      "max": 100,
+      "step": 5,
+      "unit": "%",
+      "default": 60
+    },
+    {
+      "type": "range",
+      "id": "width_mobile",
+      "label": "Largeur du panneau sur téléphone",
+      "min": 60,
+      "max": 100,
+      "step": 2,
+      "unit": "%",
+      "default": 88
+    }
+  ],
+  "presets": [
+    {
+      "name": "Description en panneau",
+      "settings": {
+        "product": "{{ closest.product }}"
+      }
+    }
+  ]
+}
+{% endschema %}
