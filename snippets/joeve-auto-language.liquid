@@ -1,0 +1,38 @@
+{% comment %}
+  Langue automatique Joeve : à la première visite, le site s'ouvre dans la
+  langue du téléphone / ordinateur du visiteur (fr, es, nl, ar...).
+  Une seule fois : si le visiteur change ensuite de langue, son choix est gardé.
+{% endcomment %}
+
+{%- unless request.design_mode -%}
+  <script>
+    (function () {
+      try {
+        if (document.cookie.indexOf('joeve_lang=') !== -1) return;
+        document.cookie = 'joeve_lang=1; path=/; max-age=31536000; SameSite=Lax';
+        {%- unless request.locale.primary %}
+        return;
+        {%- endunless %}
+        var roots = {
+          {%- for l in shop.published_locales -%}
+            {%- unless l.primary -%}
+              {{ l.iso_code | downcase | json }}: {{ l.root_url | json }},
+            {%- endunless -%}
+          {%- endfor -%}
+        };
+        var langs = navigator.languages && navigator.languages.length ? navigator.languages : [navigator.language || ''];
+        for (var i = 0; i < langs.length; i++) {
+          var code = String(langs[i] || '').toLowerCase();
+          var base = code.split('-')[0];
+          if (base === '{{ request.locale.iso_code | split: '-' | first | downcase }}') return;
+          var root = roots[code] || roots[base];
+          if (root) {
+            var path = location.pathname === '/' ? '' : location.pathname;
+            location.replace(root.replace(/\/$/, '') + path + location.search + location.hash);
+            return;
+          }
+        }
+      } catch (e) {}
+    })();
+  </script>
+{%- endunless -%}
