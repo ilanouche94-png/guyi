@@ -155,11 +155,15 @@
         width: 0.8rem;
         height: 0.8rem;
         border-radius: 50%;
-        background: {{ block.settings.dot_color }};
+        background: #d92d20;
       }
 
-      .jof-mstock__dot--low {
-        background: #d92d20;
+      #{{ sticky_id }} .jof-sticky__dot {
+        flex-shrink: 0;
+        width: 0.8rem;
+        height: 0.8rem;
+        border-radius: 50%;
+        background: {{ block.settings.dot_color }};
       }
 
       #{{ sticky_id }} .jof-sticky__inner {
@@ -199,22 +203,24 @@
     {%- when 'ar' -%}{%- assign low_stock_text = 'المخزون على وشك النفاد' -%}
     {%- else -%}{%- assign low_stock_text = 'Almost sold out' -%}
   {%- endcase -%}
+  {%- comment -%} Version courte sans « En stock » (même texte que dans le panier) {%- endcomment -%}
+  {%- assign short_template = 'joeve.cart.delivered_between' | t -%}
+  {%- assign short_text = short_template | replace: '[from]', labels[0] | replace: '[to]', labels[1] -%}
   <div class="jof-mstock" id="jof-mstock-{{ block.id }}">
     <div class="jof-mstock__row">
-      <span class="jof-mstock__dot" aria-hidden="true"></span>
       <span
         data-jof-delivery
         data-min="{{ min_days }}"
         data-max="{{ max_days }}"
         data-business="{{ block.settings.count_business_days }}"
-        data-template="{{ delivery_template | escape }}"
+        data-template="{{ short_template | escape }}"
         data-locale="{{ request.locale.iso_code }}"
       >
-        {{- delivery_text -}}
+        {{- short_text -}}
       </span>
     </div>
     <div class="jof-mstock__row">
-      <span class="jof-mstock__dot jof-mstock__dot--low" aria-hidden="true"></span>
+      <span class="jof-mstock__dot" aria-hidden="true"></span>
       <span>{{ low_stock_text }}</span>
     </div>
   </div>
@@ -234,6 +240,7 @@
         {%- assign sticky_promo = 'SPECIAL FALL PROMOTION: enjoy up to 50% off a selection of products – offer valid while stocks last' -%}
     {%- endcase -%}
     <div class="jof-sticky__band">
+      <span class="jof-sticky__dot" aria-hidden="true"></span>
       <span class="jof-sticky__text">{{ sticky_promo }}</span>
     </div>
     <div class="jof-sticky__inner">
