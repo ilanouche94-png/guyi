@@ -53,7 +53,7 @@
     transform: rotate(0deg);
   }
 
-  /* Panneau qui glisse depuis la droite */
+  /* Panneau qui glisse depuis la droite (ordinateur) */
   #{{ uid }} {
     position: fixed;
     inset: 0;
@@ -198,10 +198,34 @@
     margin-bottom: 0;
   }
 
+  /* Sur téléphone : le panneau monte depuis le bas */
   @media (max-width: 749px) {
     #{{ uid }} .joeve-drawer__panel {
-      width: {{ block.settings.width_mobile }}%;
-      padding: 7rem 2.4rem 4rem;
+      top: auto;
+      left: 0;
+      width: 100%;
+      max-height: 85vh;
+      max-height: 85dvh;
+      padding: 5.6rem 2.4rem calc(4rem + env(safe-area-inset-bottom));
+      border-radius: 1.6rem 1.6rem 0 0;
+      transform: translateY(100%);
+    }
+
+    #{{ uid }}.is-open .joeve-drawer__panel {
+      transform: translateY(0);
+    }
+
+    /* Petite barre de prise en haut */
+    #{{ uid }} .joeve-drawer__panel::before {
+      content: '';
+      position: absolute;
+      top: 0.8rem;
+      left: 50%;
+      width: 4rem;
+      height: 0.4rem;
+      border-radius: 1rem;
+      background: {{ block.settings.line_color }};
+      transform: translateX(-50%);
     }
 
     #{{ uid }} .joeve-drawer__close {
