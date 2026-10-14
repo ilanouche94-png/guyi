@@ -152,12 +152,7 @@
       }
 
       .jof-mdeliv {
-        display: block;
-        flex: 1 1 14rem;
-        min-width: 0;
-        font-size: 1.2rem;
-        line-height: 1.3;
-        color: {{ block.settings.text_color }};
+        display: inline;
       }
 
       .jof-mstock {
@@ -182,6 +177,10 @@
         height: 0.8rem;
         border-radius: 50%;
         background: #f79009;
+      }
+
+      .jof-mstock__dot--ok {
+        background: {{ block.settings.dot_color }};
       }
 
       #{{ sticky_id }} .jof-sticky__dot {
@@ -232,20 +231,23 @@
   {%- comment -%} Version courte sans « En stock » (même texte que dans le panier) {%- endcomment -%}
   {%- assign short_template = 'joeve.cart.delivered_between' | t -%}
   {%- assign short_text = short_template | replace: '[from]', labels_short[0] | replace: '[to]', labels_short[1] -%}
-  <span
-    class="jof-mdeliv"
-    id="jof-mdeliv-{{ block.id }}"
-    data-jof-delivery
-    data-short="true"
-    data-min="{{ min_days }}"
-    data-max="{{ max_days }}"
-    data-business="{{ block.settings.count_business_days }}"
-    data-template="{{ short_template | escape }}"
-    data-locale="{{ request.locale.iso_code }}"
-  >
-    {{- short_text -}}
-  </span>
   <div class="jof-mstock" id="jof-mstock-{{ block.id }}">
+    <div class="jof-mstock__row">
+      <span class="jof-mstock__dot jof-mstock__dot--ok" aria-hidden="true"></span>
+      <span
+          class="jof-mdeliv"
+          id="jof-mdeliv-{{ block.id }}"
+          data-jof-delivery
+          data-short="true"
+          data-min="{{ min_days }}"
+          data-max="{{ max_days }}"
+          data-business="{{ block.settings.count_business_days }}"
+          data-template="{{ short_template | escape }}"
+          data-locale="{{ request.locale.iso_code }}"
+        >
+          {{- short_text -}}
+        </span>
+    </div>
     <div class="jof-mstock__row">
       <span class="jof-mstock__dot" aria-hidden="true"></span>
       <span>{{ low_stock_text }}</span>
@@ -287,22 +289,11 @@
       document.body.appendChild(bar);
       document.body.classList.add('jof-has-sticky');
 
-      // Sur téléphone : la livraison se colle à droite du prix, la ligne stock passe juste en dessous
-      var deliv = stock && stock.previousElementSibling;
+      // Sur téléphone : livraison + stock juste sous le prix
       var price = section.querySelector('xo-product-will-change[xo-unique-id^="product-price-"]');
-      if (price && stock && stock.classList.contains('jof-mstock') && deliv && deliv.classList.contains('jof-mdeliv')) {
-        [stock, deliv].forEach(function (el) {
-          document.querySelectorAll('#' + el.id).forEach(function (old) { if (old !== el) old.remove(); });
-        });
-        var row = price.parentElement;
-        if (!row.classList.contains('jof-price-row')) {
-          row = document.createElement('div');
-          row.className = 'jof-price-row';
-          price.parentElement.insertBefore(row, price);
-          row.appendChild(price);
-        }
-        row.appendChild(deliv);
-        row.insertAdjacentElement('afterend', stock);
+      if (price && stock && stock.classList.contains('jof-mstock')) {
+        document.querySelectorAll('#' + stock.id).forEach(function (old) { if (old !== stock) old.remove(); });
+        price.insertAdjacentElement('afterend', stock);
       }
 
       var button = bar.querySelector('.jof-sticky__button');
