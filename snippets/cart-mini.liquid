@@ -42,6 +42,17 @@
         }
       "
     {% endif %}
+    {% if settings.cart_type == 'drawer' %}
+      {% comment %} Joeve : sur téléphone (749 px et moins), le panier monte depuis le bas. {% endcomment %}
+      xo-breakpoints="
+        {
+          749: {
+            placement: 'bottom-center',
+            animate: 'slide-up'
+          }
+        }
+      "
+    {% endif %}
   >
     <xo-cart-mini
       id="xo-cart-mini"
@@ -60,18 +71,4 @@
       {% endcase %}
     </xo-cart-mini>
   </xo-modal>
-
-  {%- if settings.cart_type == 'drawer' -%}
-    <script>
-      // Joeve : sur téléphone, le panier monte depuis le bas au lieu d'arriver par le côté.
-      // Réglé avant le chargement du thème, qui lit ces attributs au démarrage.
-      (function () {
-        if (!window.matchMedia('(max-width: 749px)').matches) return;
-        var modal = document.querySelector('xo-modal[xo-name="cart"]');
-        if (!modal) return;
-        modal.setAttribute('xo-animate', 'slide-up');
-        modal.setAttribute('xo-placement', 'bottom-center');
-      })();
-    </script>
-  {%- endif -%}
 {% endif %}
