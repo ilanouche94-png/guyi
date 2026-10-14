@@ -62,7 +62,7 @@
         "announcement_style": "carousel",
         "bar_background": "#000000",
         "bar_text_color": "#ffffff",
-        "bar_padding": 6,
+        "bar_padding": 3,
         "carousel_width": 600,
         "carousel_height": 24,
         "carousel_style": "horizontal",
