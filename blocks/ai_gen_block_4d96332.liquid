@@ -1,0 +1,284 @@
+{% doc %}
+  @prompt
+    3carte collé avec un tout petit gap en haut en police body soit taille normal mais tout en majuscule "Nos collab" en anglais 3 carte en format 9:16 et je vais mettre des video dessus, OK, mais alors, laisse l'ordre de l'espace. Ça veut dire que ça fasse un peu plus de la moitié de mon écran, comme un carrousel. La première carte fasse les trois quarts de mon écran, et que je puisse bouger avec le doigt sur ordinateur. Les trois fassent la taille de l'image sur la largeur, et fassent les deux tiers de l'écran de là-haut sur la hauteur. , OK, très bien. Mets des bords arrondis, mets un tout petit peu plus de gap entre les trucs. Bords arrondis, corner radius, tu le bombardes. Ça fasse des vraies cartes sympathiques, un tout petit peu plus de gap, et le truc hover, collabs, tu le mets au milieu, en haut.
+  Ordinateur (>= 750px) : les 3 cartes côte à côte, format 9:16, hauteur = 4/5 de l'écran, centrées. Téléphone inchangé.
+{% enddoc %}
+{% assign ai_gen_id = block.id | replace: '_', '' | downcase %}
+{% assign desktop_height = block.settings.desktop_card_height | default: 80 %}
+{% assign desktop_gap = block.settings.card_gap_desktop | default: 12 %}
+
+{% style %}
+  .ai-collabs-{{ ai_gen_id }} {
+    display: block;
+    width: {{ block.settings.desktop_width_percent }}%;
+    max-width: 100%;
+    margin: 4px auto 0;
+    color: {{ block.settings.text_color }};
+    font-family: {{ settings.type_body_font.family }}, {{ settings.type_body_font.fallback_families }};
+  }
+
+  .ai-collabs-{{ ai_gen_id }}__heading {
+    margin: 0 0 8px;
+    font: inherit;
+    font-size: {{ settings.font_size_body }}px;
+    line-height: {{ settings.line_height_body }};
+    text-align: center;
+    text-transform: uppercase;
+  }
+
+  .ai-collabs-{{ ai_gen_id }}__track {
+    display: flex;
+    gap: {{ block.settings.card_gap }}px;
+    width: 100%;
+    overflow-x: auto;
+    overflow-y: hidden;
+    padding: 0 0 4px;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: thin;
+    scrollbar-color: #777 transparent;
+    cursor: grab;
+    touch-action: pan-x pan-y;
+    overscroll-behavior-x: contain;
+  }
+
+  .ai-collabs-{{ ai_gen_id }}__track:active {
+    cursor: grabbing;
+  }
+
+  .ai-collabs-{{ ai_gen_id }}__card {
+    position: relative;
+    display: block;
+    flex: 0 0 75%;
+    min-width: 0;
+    height: {{ block.settings.card_height }}vh;
+    overflow: hidden;
+    border-radius: {{ block.settings.corner_radius }}px;
+    background: #f1f1f1;
+    scroll-snap-align: start;
+  }
+
+  .ai-collabs-{{ ai_gen_id }}__video,
+  .ai-collabs-{{ ai_gen_id }}__placeholder {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .ai-collabs-{{ ai_gen_id }}__placeholder {
+    position: absolute;
+    inset: 0;
+    background: #f1f1f1;
+  }
+
+  .ai-collabs-{{ ai_gen_id }}__placeholder svg {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    fill: #b8b8b8;
+  }
+
+  .ai-collabs-{{ ai_gen_id }}__empty {
+    position: absolute;
+    right: 8px;
+    bottom: 8px;
+    left: 8px;
+    margin: 0;
+    padding: 6px 8px;
+    border-radius: 4px;
+    background: rgba(0, 0, 0, 0.76);
+    color: #ffffff;
+    font-size: 12px;
+    line-height: 1.35;
+  }
+
+  @media screen and (max-width: 749px) {
+    .ai-collabs-{{ ai_gen_id }} {
+      width: 100%;
+    }
+  }
+
+  /* Ordinateur : les 3 écrans côte à côte, 9:16, hauteur = 4/5 de l'écran, centrés */
+  @media screen and (min-width: 750px) {
+    .ai-collabs-{{ ai_gen_id }} {
+      width: 100%;
+    }
+
+    .ai-collabs-{{ ai_gen_id }}__track {
+      justify-content: center;
+      gap: {{ desktop_gap }}px;
+      overflow: visible;
+      padding: 0;
+      scroll-snap-type: none;
+      cursor: default;
+      touch-action: auto;
+    }
+
+    .ai-collabs-{{ ai_gen_id }}__card {
+      flex: 0 0 auto;
+      height: min({{ desktop_height }}vh, calc((100vw - {{ desktop_gap | times: 2 }}px - 64px) * 16 / 27));
+      width: auto;
+      aspect-ratio: 9 / 16;
+      scroll-snap-align: none;
+    }
+  }
+{% endstyle %}
+
+<div class="ai-collabs-{{ ai_gen_id }}" {{ block.shopify_attributes }}>
+  {% if block.settings.heading != blank %}
+    <h2 class="ai-collabs-{{ ai_gen_id }}__heading">{{ block.settings.heading | escape }}</h2>
+  {% endif %}
+  <div class="ai-collabs-{{ ai_gen_id }}__track" aria-label="{{ block.settings.heading | escape }}" tabindex="0">
+    {% for i in (1..3) %}
+      {% assign video_key = 'video_' | append: i %}
+      {% assign video = block.settings[video_key] %}
+      <div class="ai-collabs-{{ ai_gen_id }}__card">
+        {% if video != blank %}
+          <video class="ai-collabs-{{ ai_gen_id }}__video" autoplay loop muted playsinline preload="metadata" aria-label="{{ block.settings.heading | escape }} {{ i }}">
+            {% for source in video.sources %}
+              <source src="{{ source.url }}" type="{{ source.mime_type }}">
+            {% endfor %}
+          </video>
+        {% else %}
+          <div class="ai-collabs-{{ ai_gen_id }}__placeholder">
+            {{ 'image' | placeholder_svg_tag }}
+            <p class="ai-collabs-{{ ai_gen_id }}__empty">Add a video for card {{ i }}</p>
+          </div>
+        {% endif %}
+      </div>
+    {% endfor %}
+  </div>
+</div>
+
+<script>
+  (() => {
+    const block = document.querySelector('.ai-collabs-{{ ai_gen_id }}');
+    if (!block) return;
+    const track = block.querySelector('.ai-collabs-{{ ai_gen_id }}__track');
+    let pressed = false;
+    let startX = 0;
+    let initialScroll = 0;
+    track.addEventListener('pointerdown', (event) => {
+      if (event.pointerType === 'touch' || event.button !== 0) return;
+      pressed = true;
+      startX = event.clientX;
+      initialScroll = track.scrollLeft;
+      track.setPointerCapture(event.pointerId);
+    });
+    track.addEventListener('pointermove', (event) => {
+      if (pressed) track.scrollLeft = initialScroll - (event.clientX - startX);
+    });
+    const release = () => { pressed = false; };
+    track.addEventListener('pointerup', release);
+    track.addEventListener('pointercancel', release);
+    track.addEventListener('lostpointercapture', release);
+  })();
+</script>
+
+{% schema %}
+{
+  "name": "Collab video carousel",
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Our collabs"
+    },
+    {
+      "type": "range",
+      "id": "desktop_width_percent",
+      "label": "Desktop width",
+      "min": 50,
+      "max": 100,
+      "step": 5,
+      "unit": "%",
+      "default": 100
+    },
+    {
+      "type": "range",
+      "id": "card_gap",
+      "label": "Card gap",
+      "min": 0,
+      "max": 20,
+      "step": 1,
+      "unit": "px",
+      "default": 6
+    },
+    {
+      "type": "range",
+      "id": "card_height",
+      "label": "Card height",
+      "min": 30,
+      "max": 90,
+      "step": 5,
+      "unit": "vh",
+      "default": 65
+    },
+    {
+      "type": "range",
+      "id": "corner_radius",
+      "label": "Corner radius",
+      "min": 0,
+      "max": 30,
+      "step": 2,
+      "unit": "px",
+      "default": 16
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Heading color",
+      "default": "#1A1A1A"
+    },
+    {
+      "type": "header",
+      "content": "Ordinateur"
+    },
+    {
+      "type": "range",
+      "id": "desktop_card_height",
+      "label": "Hauteur des cartes (% de l'écran)",
+      "min": 40,
+      "max": 95,
+      "step": 5,
+      "unit": "%",
+      "default": 80
+    },
+    {
+      "type": "range",
+      "id": "card_gap_desktop",
+      "label": "Espace entre les cartes",
+      "min": 0,
+      "max": 40,
+      "step": 2,
+      "unit": "px",
+      "default": 12
+    },
+    {
+      "type": "video",
+      "id": "video_1",
+      "label": "Video 1"
+    },
+    {
+      "type": "video",
+      "id": "video_2",
+      "label": "Video 2"
+    },
+    {
+      "type": "video",
+      "id": "video_3",
+      "label": "Video 3"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Collab video carousel"
+    }
+  ],
+  "tag": null,
+  "class": "collab-video-carousel"
+}
+{% endschema %}
