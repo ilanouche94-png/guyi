@@ -1,15 +1,12 @@
 {% comment %}
-  Langue automatique Joeve : à la première visite, le site s'ouvre dans la
-  langue du téléphone / ordinateur du visiteur (fr, es, nl, ar...).
-  Une seule fois : si le visiteur change ensuite de langue, son choix est gardé.
+  Langue automatique Joeve : sur une page en anglais, le site passe dans la
+  langue du téléphone / ordinateur du visiteur (fr, es, nl, ar...), à chaque visite.
 {% endcomment %}
 
 {%- unless request.design_mode -%}
   <script>
     (function () {
       try {
-        if (document.cookie.indexOf('joeve_lang=') !== -1) return;
-        document.cookie = 'joeve_lang=1; path=/; max-age=31536000; SameSite=Lax';
         {%- unless request.locale.primary %}
         return;
         {%- endunless %}
