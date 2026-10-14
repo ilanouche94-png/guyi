@@ -1,0 +1,182 @@
+{% doc %}
+  @prompt
+    slide show mobile de 6 image qui bouge toute les 0,6s  avec le shop now ecrit ecrit en bas au centre de l'image. Uniquement visible sur mobile , nan le changement je ne veux pas qu'il soit smooth et le shop now est mal ecrit je le vuex fin blanc avec un trait en dessous , shop now en majusclule , enleve juste les 6 point en haut 
+{% enddoc %}
+{% assign ai_gen_id = block.id | replace: '_', '' | downcase %}
+
+{% style %}
+  .ai-mobile-showcase-{{ ai_gen_id }} {
+    display: none;
+    width: 100%;
+  }
+
+  @media screen and (max-width: 749px) {
+    .ai-mobile-showcase-{{ ai_gen_id }} {
+      display: block;
+      position: relative;
+      overflow: hidden;
+      width: {{ block.settings.desktop_width_percent }}%;
+      max-width: 100%;
+      aspect-ratio: {{ block.settings.aspect_width }} / {{ block.settings.aspect_height }};
+      background: #f2f2f2;
+    }
+
+    .ai-mobile-showcase-{{ ai_gen_id }} .ai-mobile-showcase__slide-{{ ai_gen_id }} {
+      position: absolute;
+      inset: 0;
+      visibility: hidden;
+      opacity: 0;
+    }
+
+    .ai-mobile-showcase-{{ ai_gen_id }} .ai-mobile-showcase__slide-{{ ai_gen_id }}[data-active="true"] {
+      visibility: visible;
+      opacity: 1;
+    }
+
+    .ai-mobile-showcase-{{ ai_gen_id }} .ai-mobile-showcase__slide-{{ ai_gen_id }} img,
+    .ai-mobile-showcase-{{ ai_gen_id }} .ai-mobile-showcase__placeholder-{{ ai_gen_id }} svg {
+      display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .ai-mobile-showcase-{{ ai_gen_id }} .ai-mobile-showcase__placeholder-{{ ai_gen_id }} {
+      width: 100%;
+      height: 100%;
+      background: #e9e9e9;
+    }
+
+    .ai-mobile-showcase-{{ ai_gen_id }} .ai-mobile-showcase__empty-{{ ai_gen_id }} {
+      position: absolute;
+      inset: auto 12px 56px;
+      color: #333;
+      font: 13px/1.4 sans-serif;
+      text-align: center;
+      pointer-events: none;
+    }
+
+    .ai-mobile-showcase-{{ ai_gen_id }} .ai-mobile-showcase__shade-{{ ai_gen_id }} {
+      position: absolute;
+      inset: 55% 0 0;
+      background: linear-gradient(transparent, rgba(0, 0, 0, 0.48));
+      pointer-events: none;
+    }
+
+    .ai-mobile-showcase-{{ ai_gen_id }} .ai-mobile-showcase__link-{{ ai_gen_id }} {
+      position: absolute;
+      z-index: 2;
+      left: 50%;
+      bottom: 22px;
+      transform: translateX(-50%);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 44px;
+      padding: 8px 4px;
+      color: #ffffff;
+      background: transparent;
+      text-decoration: underline;
+      text-decoration-color: #ffffff;
+      text-decoration-thickness: 1px;
+      text-underline-offset: 5px;
+      font-family: inherit;
+      font-size: 14px;
+      font-weight: 400;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      border-radius: 0;
+      white-space: nowrap;
+    }
+
+    /* Toute la photo mène à la collection */
+    .ai-mobile-showcase-{{ ai_gen_id }} .ai-mobile-showcase__cover-{{ ai_gen_id }} {
+      position: absolute;
+      inset: 0;
+      z-index: 1;
+    }
+
+    .ai-mobile-showcase-{{ ai_gen_id }} .ai-mobile-showcase__link-{{ ai_gen_id }}:focus-visible {
+      outline: 2px solid #ffffff;
+      outline-offset: 4px;
+    }
+  }
+{% endstyle %}
+
+<mobile-image-showcase-{{ ai_gen_id }} class="ai-mobile-showcase-{{ ai_gen_id }}" data-interval="600" {{ block.shopify_attributes }}>
+  {% for i in (1..6) %}
+    {% liquid
+      assign image_key = 'image_' | append: i
+      assign slide_image = block.settings[image_key]
+    %}
+    <div class="ai-mobile-showcase__slide-{{ ai_gen_id }}" data-slide data-active="{% if forloop.first %}true{% else %}false{% endif %}" aria-hidden="{% if forloop.first %}false{% else %}true{% endif %}">
+      {% if slide_image != blank %}
+        <img src="{{ slide_image | image_url: width: 1400 }}" alt="{{ slide_image.alt | escape }}" loading="lazy" width="{{ slide_image.width }}" height="{{ slide_image.height }}">
+      {% else %}
+        <div class="ai-mobile-showcase__placeholder-{{ ai_gen_id }}">
+          {{ 'image' | placeholder_svg_tag }}
+          {% if forloop.first %}<div class="ai-mobile-showcase__empty-{{ ai_gen_id }}">Ajoutez jusqu’à 6 images dans les réglages du bloc.</div>{% endif %}
+        </div>
+      {% endif %}
+      <span class="ai-mobile-showcase__shade-{{ ai_gen_id }}" aria-hidden="true"></span>
+    </div>
+  {% endfor %}
+  {% if block.settings.shop_link != blank %}
+    <a class="ai-mobile-showcase__cover-{{ ai_gen_id }}" href="{{ block.settings.shop_link }}" tabindex="-1" aria-hidden="true"></a>
+    <a class="ai-mobile-showcase__link-{{ ai_gen_id }}" href="{{ block.settings.shop_link }}">{{ block.settings.button_label | escape | upcase }}</a>
+  {% else %}
+    <span class="ai-mobile-showcase__link-{{ ai_gen_id }}">{{ block.settings.button_label | escape | upcase }}</span>
+  {% endif %}
+</mobile-image-showcase-{{ ai_gen_id }}>
+
+<script>
+  (function() {
+    var tagName = 'mobile-image-showcase-{{ ai_gen_id }}';
+    if (customElements.get(tagName)) return;
+    class MobileImageShowcase extends HTMLElement {
+      connectedCallback() {
+        this.slides = Array.from(this.querySelectorAll('[data-slide]'));
+        this.index = 0;
+        this.timer = null;
+        if (this.slides.length < 2) return;
+        this.timer = window.setInterval(() => this.showNext(), Number(this.dataset.interval) || 600);
+      }
+      showNext() {
+        this.index = (this.index + 1) % this.slides.length;
+        this.slides.forEach((slide, index) => {
+          var active = index === this.index;
+          slide.dataset.active = active ? 'true' : 'false';
+          slide.setAttribute('aria-hidden', active ? 'false' : 'true');
+        });
+      }
+      disconnectedCallback() {
+        if (this.timer) window.clearInterval(this.timer);
+      }
+    }
+    customElements.define(tagName, MobileImageShowcase);
+  })();
+</script>
+
+{% schema %}
+{
+  "name": "Mobile image slideshow",
+  "settings": [
+    { "type": "header", "content": "Images" },
+    { "type": "image_picker", "id": "image_1", "label": "Image 1" },
+    { "type": "image_picker", "id": "image_2", "label": "Image 2" },
+    { "type": "image_picker", "id": "image_3", "label": "Image 3" },
+    { "type": "image_picker", "id": "image_4", "label": "Image 4" },
+    { "type": "image_picker", "id": "image_5", "label": "Image 5" },
+    { "type": "image_picker", "id": "image_6", "label": "Image 6" },
+    { "type": "range", "id": "desktop_width_percent", "label": "Desktop width", "min": 50, "max": 100, "step": 5, "unit": "%", "default": 100 },
+    { "type": "range", "id": "aspect_width", "label": "Image ratio width", "min": 1, "max": 10, "step": 1, "default": 4 },
+    { "type": "range", "id": "aspect_height", "label": "Image ratio height", "min": 1, "max": 10, "step": 1, "default": 5 },
+    { "type": "header", "content": "Shop now button" },
+    { "type": "text", "id": "button_label", "label": "Button text", "default": "Shop now" },
+    { "type": "url", "id": "shop_link", "label": "Button link" }
+  ],
+  "presets": [{ "name": "Mobile image slideshow" }],
+  "tag": null,
+  "class": "mobile-image-slideshow"
+}
+{% endschema %}

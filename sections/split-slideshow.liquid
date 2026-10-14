@@ -1,0 +1,72 @@
+{%- liquid
+  assign uid = section.id | replace: '_', '-'
+  assign speed = section.settings.speed | default: 0.6
+  assign total = 6
+  assign cycle = speed | times: total
+  assign half_offset = speed | times: 3
+-%}
+
+<style>
+  .split-ss-{{ uid }}{position:relative;width:100%;height:{{ section.settings.height_desktop }}vh;overflow:hidden;display:flex;background:#000}
+  .split-ss-{{ uid }} .ss-side{position:relative;overflow:hidden;height:100%;flex:1 1 50%;width:50%}
+  .split-ss-{{ uid }} .ss-img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;animation:ss-cut-{{ uid }} {{ cycle }}s infinite;animation-timing-function:steps(1,end)}
+  .split-ss-{{ uid }} .ss-side.left .ss-img{animation-delay:calc(var(--i) * -{{ speed }}s)}
+  .split-ss-{{ uid }} .ss-side.right .ss-img{animation-delay:calc((var(--i) * -{{ speed }}s) - {{ half_offset }}s)}
+  .split-ss-{{ uid }} .ss-overlay{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;z-index:5;pointer-events:none}
+  .split-ss-{{ uid }} .ss-cta{pointer-events:auto;display:inline-flex;flex-direction:column;align-items:center;gap:10px;color:#fff;font-family:inherit;font-size:16px;font-weight:600;letter-spacing:.22em;text-transform:uppercase;text-decoration:none;padding:4px 2px}
+  .split-ss-{{ uid }} .ss-cta::before{content:"";position:absolute;inset:0}
+  .split-ss-{{ uid }} .ss-cta::after{content:"";display:block;width:70px;height:1px;background:#fff;transition:width .3s ease}
+  .split-ss-{{ uid }} .ss-cta:hover::after{width:110px}
+  @keyframes ss-cut-{{ uid }}{0%{opacity:1}16.66%{opacity:0}100%{opacity:0}}
+  @media (max-width:749px){.split-ss-{{ uid }}{display:none}}
+</style>
+
+<section class="split-ss-{{ uid }}">
+  <div class="ss-side left">
+    {%- for i in (1..6) -%}
+      {%- assign key = 'image_' | append: i -%}
+      {%- assign img = section.settings[key] -%}
+      {%- if img != blank -%}
+        <img class="ss-img" style="--i:{{ forloop.index0 }}" src="{{ img | image_url: width: 1200 }}" alt="" loading="lazy">
+      {%- endif -%}
+    {%- endfor -%}
+  </div>
+  <div class="ss-side right">
+    {%- for i in (1..6) -%}
+      {%- assign key = 'image_' | append: i -%}
+      {%- assign img = section.settings[key] -%}
+      {%- if img != blank -%}
+        <img class="ss-img" style="--i:{{ forloop.index0 }}" src="{{ img | image_url: width: 1200 }}" alt="" loading="lazy">
+      {%- endif -%}
+    {%- endfor -%}
+  </div>
+  <div class="ss-overlay">
+    <a class="ss-cta" href="{{ section.settings.cta_link }}"><span>{{ section.settings.cta_text }}</span></a>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Split slideshow",
+  "tag": "section",
+  "settings": [
+    { "type": "header", "content": "Images" },
+    { "type": "paragraph", "content": "6 images. Gauche defile 1>6, droite demarre decalee (image 4)." },
+    { "type": "image_picker", "id": "image_1", "label": "Image 1" },
+    { "type": "image_picker", "id": "image_2", "label": "Image 2" },
+    { "type": "image_picker", "id": "image_3", "label": "Image 3" },
+    { "type": "image_picker", "id": "image_4", "label": "Image 4" },
+    { "type": "image_picker", "id": "image_5", "label": "Image 5" },
+    { "type": "image_picker", "id": "image_6", "label": "Image 6" },
+    { "type": "header", "content": "Reglages" },
+    { "type": "range", "id": "speed", "label": "Duree par image (secondes)", "min": 0.2, "max": 6, "step": 0.2, "default": 0.6, "unit": "s" },
+    { "type": "range", "id": "height_desktop", "label": "Hauteur desktop (vh)", "min": 40, "max": 100, "step": 5, "default": 80 },
+    { "type": "header", "content": "Bouton" },
+    { "type": "text", "id": "cta_text", "label": "Texte du bouton", "default": "SHOP NOW" },
+    { "type": "url", "id": "cta_link", "label": "Lien du bouton" }
+  ],
+  "presets": [
+    { "name": "Split slideshow" }
+  ]
+}
+{% endschema %}
