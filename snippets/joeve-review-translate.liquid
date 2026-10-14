@@ -1,0 +1,143 @@
+{% comment %}
+  Traduit les avis de l'application CWILL / Trustoo dans la langue du visiteur.
+  - Les libellés fixes (« Verified purchase », tri…) sont traduits ici, sans frais.
+  - Les titres et textes des avis passent par le traducteur Cloudflare (une seule fois par avis et par langue).
+  Rendu dans layout/theme.liquid, uniquement hors anglais.
+{% endcomment %}
+
+{%- assign joeve_rv_locale = request.locale.iso_code -%}
+{%- if joeve_rv_locale == 'fr' or joeve_rv_locale == 'es' or joeve_rv_locale == 'nl' or joeve_rv_locale == 'ar' -%}
+  <script>
+    (function () {
+      if (window.joeveReviewTranslate) return;
+      window.joeveReviewTranslate = true;
+
+      var LOCALE = '{{ joeve_rv_locale }}';
+      var ENDPOINT = 'https://joeve-translator.luffyshala.workers.dev/reviews';
+      var ROOTS = '[id^="trustoo"], [class*="trustoo"]';
+      var SKIP = 'script, style, input, textarea, select';
+      var PRODUCT = '.product-info'; // nom du produit : jamais traduit (seul le libellé l'est)
+      var BATCH = 40;
+
+      var LABELS = {
+        fr: {
+          'Store reviews': 'Avis de la boutique', 'Verified purchase': 'Achat vérifié', 'Item type:': 'Article :',
+          'Most Relevant': 'Les plus pertinents', 'Most Recent': 'Les plus récents', 'Highest Rating': 'Meilleures notes',
+          'Lowest Rating': 'Notes les plus basses', 'With Photos': 'Avec photos', 'Write a review': 'Écrire un avis',
+          'Load more': 'Voir plus', 'Show more': 'Voir plus', 'Reviews': 'Avis', 'Helpful': 'Utile'
+        },
+        es: {
+          'Store reviews': 'Opiniones de la tienda', 'Verified purchase': 'Compra verificada', 'Item type:': 'Artículo:',
+          'Most Relevant': 'Más relevantes', 'Most Recent': 'Más recientes', 'Highest Rating': 'Mejor valoradas',
+          'Lowest Rating': 'Peor valoradas', 'With Photos': 'Con fotos', 'Write a review': 'Escribir una opinión',
+          'Load more': 'Ver más', 'Show more': 'Ver más', 'Reviews': 'Opiniones', 'Helpful': 'Útil'
+        },
+        nl: {
+          'Store reviews': 'Winkelbeoordelingen', 'Verified purchase': 'Geverifieerde aankoop', 'Item type:': 'Artikel:',
+          'Most Relevant': 'Meest relevant', 'Most Recent': 'Nieuwste', 'Highest Rating': 'Hoogste beoordeling',
+          'Lowest Rating': 'Laagste beoordeling', 'With Photos': "Met foto's", 'Write a review': 'Schrijf een review',
+          'Load more': 'Meer laden', 'Show more': 'Meer tonen', 'Reviews': 'Reviews', 'Helpful': 'Nuttig'
+        },
+        ar: {
+          'Store reviews': 'تقييمات المتجر', 'Verified purchase': 'شراء موثّق', 'Item type:': 'المنتج:',
+          'Most Relevant': 'الأكثر صلة', 'Most Recent': 'الأحدث', 'Highest Rating': 'الأعلى تقييمًا',
+          'Lowest Rating': 'الأقل تقييمًا', 'With Photos': 'مع صور', 'Write a review': 'اكتبي تقييمًا',
+          'Load more': 'عرض المزيد', 'Show more': 'عرض المزيد', 'Reviews': 'التقييمات', 'Helpful': 'مفيد'
+        }
+      }[LOCALE];
+
+      var done = new WeakSet(); // nœuds déjà traités (ou leur traduction)
+      var memory = {}; // texte d'origine -> traduction, pour la page en cours
+      try { memory = JSON.parse(sessionStorage.getItem('joeve-rv-' + LOCALE) || '{}'); } catch (e) {}
+      var asked = {}; // textes déjà envoyés (évite les doublons pendant l'attente)
+      var outputs = {}; // textes déjà traduits : on ne les renvoie pas
+      Object.keys(memory).forEach(function (k) { outputs[memory[k]] = true; });
+      var timer = null;
+
+      function remember() {
+        try { sessionStorage.setItem('joeve-rv-' + LOCALE, JSON.stringify(memory)); } catch (e) {}
+      }
+
+      // Libellé fixe : « Store reviews(41) » garde son compteur
+      function label(text) {
+        if (LABELS[text]) return LABELS[text];
+        var m = text.match(/^(.*?)\s*(\(\d+\))$/);
+        if (m && LABELS[m[1]]) return LABELS[m[1]] + ' ' + m[2];
+        return null;
+      }
+
+      // Une phrase à traduire : au moins deux mots, et pas une date ou un nombre
+      function isSentence(text) {
+        if (text.length < 4 || text.split(/\s+/).length < 2) return false;
+        return !/^[\d\s\/.:,()+-]+$/.test(text);
+      }
+
+      function collect() {
+        var nodes = [];
+        document.querySelectorAll(ROOTS).forEach(function (root) {
+          var walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
+          var node;
+          while ((node = walker.nextNode())) {
+            if (done.has(node)) continue;
+            var parent = node.parentElement;
+            if (!parent || parent.closest(SKIP)) continue;
+            nodes.push(node);
+          }
+        });
+        return nodes;
+      }
+
+      function apply(node, text, value) {
+        var raw = node.nodeValue;
+        node.nodeValue = raw.replace(text, value);
+        done.add(node);
+      }
+
+      function run() {
+        timer = null;
+        var pending = [];
+        collect().forEach(function (node) {
+          var text = (node.nodeValue || '').trim();
+          if (!text) return;
+          var fixed = label(text);
+          if (fixed) return apply(node, text, fixed);
+          if (node.parentElement.closest(PRODUCT)) return done.add(node);
+          if (!isSentence(text) || outputs[text]) return done.add(node);
+          if (memory[text]) return apply(node, text, memory[text]);
+          pending.push({ node: node, text: text });
+        });
+
+        var texts = [];
+        pending.forEach(function (p) {
+          if (!asked[p.text] && texts.indexOf(p.text) === -1) texts.push(p.text);
+        });
+        for (var i = 0; i < texts.length; i += BATCH) send(texts.slice(i, i + BATCH));
+      }
+
+      function send(texts) {
+        texts.forEach(function (t) { asked[t] = true; });
+        fetch(ENDPOINT, {
+          method: 'POST',
+          headers: { 'Content-Type': 'text/plain' },
+          body: JSON.stringify({ locale: LOCALE, texts: texts })
+        })
+          .then(function (r) { return r.ok ? r.json() : { translations: [] }; })
+          .then(function (data) {
+            (data.translations || []).forEach(function (value, i) {
+              if (value) { memory[texts[i]] = value; outputs[value] = true; }
+            });
+            remember();
+            schedule();
+          })
+          .catch(function () {});
+      }
+
+      function schedule() {
+        if (!timer) timer = setTimeout(run, 200);
+      }
+
+      new MutationObserver(schedule).observe(document.documentElement, { childList: true, subtree: true, characterData: true });
+      schedule();
+    })();
+  </script>
+{%- endif -%}
