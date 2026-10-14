@@ -94,7 +94,8 @@
 {%- if block.settings.mobile_sticky and section.id contains 'main_product' -%}
   {%- assign sticky_id = 'jof-sticky-' | append: block.id -%}
   <style>
-    #{{ sticky_id }} {
+    #{{ sticky_id }},
+    .jof-mstock {
       display: none;
     }
 
@@ -132,6 +133,35 @@
         line-height: 1.3;
       }
 
+      /* Livraison + stock, juste sous le prix (déplacé par le script plus bas) */
+      .jof-mstock {
+        display: flex;
+        flex-direction: column;
+        gap: 0.6rem;
+        margin-top: 1rem;
+        font-size: 1.35rem;
+        line-height: 1.35;
+        color: {{ block.settings.text_color }};
+      }
+
+      .jof-mstock__row {
+        display: flex;
+        align-items: center;
+        gap: 0.8rem;
+      }
+
+      .jof-mstock__dot {
+        flex-shrink: 0;
+        width: 0.8rem;
+        height: 0.8rem;
+        border-radius: 50%;
+        background: {{ block.settings.dot_color }};
+      }
+
+      .jof-mstock__dot--low {
+        background: #d92d20;
+      }
+
       #{{ sticky_id }} .jof-sticky__inner {
         padding: 2.5rem 1.9rem 2rem;
       }
@@ -162,6 +192,33 @@
     }
   </style>
 
+  {%- case request.locale.iso_code -%}
+    {%- when 'fr' -%}{%- assign low_stock_text = 'Stock bientôt épuisé' -%}
+    {%- when 'es' -%}{%- assign low_stock_text = 'Stock casi agotado' -%}
+    {%- when 'nl' -%}{%- assign low_stock_text = 'Bijna uitverkocht' -%}
+    {%- when 'ar' -%}{%- assign low_stock_text = 'المخزون على وشك النفاد' -%}
+    {%- else -%}{%- assign low_stock_text = 'Almost sold out' -%}
+  {%- endcase -%}
+  <div class="jof-mstock" id="jof-mstock-{{ block.id }}">
+    <div class="jof-mstock__row">
+      <span class="jof-mstock__dot" aria-hidden="true"></span>
+      <span
+        data-jof-delivery
+        data-min="{{ min_days }}"
+        data-max="{{ max_days }}"
+        data-business="{{ block.settings.count_business_days }}"
+        data-template="{{ delivery_template | escape }}"
+        data-locale="{{ request.locale.iso_code }}"
+      >
+        {{- delivery_text -}}
+      </span>
+    </div>
+    <div class="jof-mstock__row">
+      <span class="jof-mstock__dot jof-mstock__dot--low" aria-hidden="true"></span>
+      <span>{{ low_stock_text }}</span>
+    </div>
+  </div>
+
   <div id="{{ sticky_id }}" class="jof-sticky">
     {%- comment -%} Message promo à la place de la ligne livraison, dans la langue du visiteur {%- endcomment -%}
     {%- case request.locale.iso_code -%}
@@ -189,11 +246,19 @@
       var bar = document.currentScript && document.currentScript.previousElementSibling;
       if (!bar || !bar.classList.contains('jof-sticky')) return;
       var section = bar.closest('.shopify-section') || document;
+      var stock = bar.previousElementSibling;
 
       // Retire une ancienne barre (rechargement dans l'éditeur) puis place celle-ci dans <body>
       document.querySelectorAll('#' + bar.id).forEach(function (el) { if (el !== bar) el.remove(); });
       document.body.appendChild(bar);
       document.body.classList.add('jof-has-sticky');
+
+      // Sur téléphone, la ligne livraison + stock se place juste sous le prix
+      if (stock && stock.classList.contains('jof-mstock')) {
+        document.querySelectorAll('#' + stock.id).forEach(function (el) { if (el !== stock) el.remove(); });
+        var price = section.querySelector('xo-product-will-change[xo-unique-id^="product-price-"]');
+        if (price) price.insertAdjacentElement('afterend', stock);
+      }
 
       var button = bar.querySelector('.jof-sticky__button');
 
