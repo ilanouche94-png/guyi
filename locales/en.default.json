@@ -28,7 +28,12 @@
       "checkout": "Checkout",
       "delivered_between": "Delivered between [from] and [to]",
       "payment_note": "Secure payment in US dollars (USD), converted by your bank",
-      "returns_note": "30-day returns · Secure payment"
+      "returns_note": "30-day returns · Secure payment",
+      "promo_question": "Have a promo code?",
+      "promo_placeholder": "Promo code",
+      "promo_apply": "Apply",
+      "promo_applied": "Code applied ✓",
+      "promo_invalid": "This code isn't valid for this cart"
     },
     "delivery": {
       "in_stock_between": "In stock: delivered between [from] and [to]"
@@ -120,8 +125,8 @@
       "hours": "Hours",
       "minutes": "Minutes",
       "seconds": "Seconds",
-      "notification_name_html": "<span class=\"xo-popup-sale-notification__customer-name\">{{ name }}<\/span> has purchased!",
-      "notification_minute_html": "<span class=\"xo-popup-sale-notification__minute\">{{ minute }}<\/span> mins ago"
+      "notification_name_html": "<span class=\"xo-popup-sale-notification__customer-name\">{{ name }}</span> has purchased!",
+      "notification_minute_html": "<span class=\"xo-popup-sale-notification__minute\">{{ minute }}</span> mins ago"
     },
     "comparision": {
       "before": "Before",
@@ -151,7 +156,7 @@
       "in_stock": "{{ count }} in stock"
     },
     "tooltip": {
-      "dark_mode": "Dark\/light",
+      "dark_mode": "Dark/light",
       "back_to_top": "Back to top"
     }
   },
@@ -254,8 +259,8 @@
         "view_store_info": "View store information",
         "check_other_stores": "Check availability at other stores",
         "pick_up_available": "Pickup available",
-        "pick_up_available_at_html": "Pickup available at <span class=\"fw:600\">{{ location_name }}<\/span>",
-        "pick_up_unavailable_at_html": "Pickup currently unavailable at <span class=\"fw:600\">{{ location_name }}<\/span>",
+        "pick_up_available_at_html": "Pickup available at <span class=\"fw:600\">{{ location_name }}</span>",
+        "pick_up_unavailable_at_html": "Pickup currently unavailable at <span class=\"fw:600\">{{ location_name }}</span>",
         "unavailable": "Couldn't load pickup availability",
         "refresh": "Refresh"
       },
@@ -289,7 +294,7 @@
       "xr_button": "View in your space",
       "xr_button_label": "View in your space, loads item in augmented reality window",
       "include_taxes": "Tax included.",
-      "shipping_policy_html": "<a href=\"{{ link }}\">Shipping<\/a> calculated at checkout."
+      "shipping_policy_html": "<a href=\"{{ link }}\">Shipping</a> calculated at checkout."
     },
     "modal": {
       "label": "Media gallery"
@@ -420,9 +425,9 @@
       "apply": "Apply",
       "cart_error": "There was an error while updating your cart. Please try again.",
       "cart_quantity_error_html": "You can only add {{ quantity }} of this item to your cart.",
-      "taxes_and_shipping_policy_at_checkout_html": "Taxes and <a href=\"{{ link }}\">shipping<\/a> calculated at checkout",
+      "taxes_and_shipping_policy_at_checkout_html": "Taxes and <a href=\"{{ link }}\">shipping</a> calculated at checkout",
       "taxes_included_but_shipping_at_checkout": "Tax included and shipping calculated at checkout",
-      "taxes_included_and_shipping_policy_html": "Tax included. <a href=\"{{ link }}\">Shipping<\/a> calculated at checkout.",
+      "taxes_included_and_shipping_policy_html": "Tax included. <a href=\"{{ link }}\">Shipping</a> calculated at checkout.",
       "taxes_and_shipping_at_checkout": "Taxes and shipping calculated at checkout",
       "estimated_tax": "Estimated tax",
       "shipping": "Shipping",
@@ -435,7 +440,7 @@
         "image": "Product image"
       },
       "update": "Update",
-      "paragraph_html": "Have an account? <a href=\"account\/login\" class=\"{{ class }}\" xo-link-hover> Login<\/a> to check out faster.",
+      "paragraph_html": "Have an account? <a href=\"account/login\" class=\"{{ class }}\" xo-link-hover> Login</a> to check out faster.",
       "continue_shoping": "Continue shopping",
       "view_cart": "View cart",
       "item_added": "Item added to your cart",
@@ -460,7 +465,7 @@
     "collection_template": {
       "empty": "No products found",
       "title": "Collection",
-      "use_fewer_filters_html": "Use fewer filters or <a class=\"{{ class }}\" href=\"{{ link }}\">remove all<\/a>",
+      "use_fewer_filters_html": "Use fewer filters or <a class=\"{{ class }}\" href=\"{{ link }}\">remove all</a>",
       "page_label": "Go to page"
     },
     "video": {
@@ -487,13 +492,13 @@
     }
   },
   "localization": {
-    "country_label": "Country\/region",
+    "country_label": "Country/region",
     "state_label": "State",
     "postal_code_label": "Postal code",
     "select_province": "Select province",
     "language_label": "Language",
     "update_language": "Update language",
-    "update_country": "Update country\/region"
+    "update_country": "Update country/region"
   },
   "customer": {
     "account": {
@@ -528,9 +533,9 @@
       "address1": "Address 1",
       "address2": "Address 2",
       "city": "City",
-      "country": "Country\/region",
+      "country": "Country/region",
       "province": "Province",
-      "zip": "Postal\/ZIP code",
+      "zip": "Postal/ZIP code",
       "phone": "Phone",
       "set_default": "Set as default address",
       "add": "Add address",

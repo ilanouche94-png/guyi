@@ -70,6 +70,30 @@
   </xo-cart-will-change>
 
   <div class="joeve-cart-footer__static">
+    <details class="joeve-promo">
+      <summary class="joeve-promo__toggle">{{ 'joeve.cart.promo_question' | t }}<span aria-hidden="true">+</span></summary>
+      <form class="joeve-promo__form" data-joeve-promo>
+        <input
+          class="joeve-promo__input"
+          type="text"
+          name="discount"
+          autocomplete="off"
+          autocapitalize="characters"
+          placeholder="{{ 'joeve.cart.promo_placeholder' | t | escape }}"
+          aria-label="{{ 'joeve.cart.promo_placeholder' | t | escape }}"
+          required
+        >
+        <button type="submit" class="joeve-promo__apply">{{ 'joeve.cart.promo_apply' | t }}</button>
+      </form>
+      <p
+        class="joeve-promo__message"
+        data-joeve-promo-message
+        data-ok="{{ 'joeve.cart.promo_applied' | t | escape }}"
+        data-invalid="{{ 'joeve.cart.promo_invalid' | t | escape }}"
+        hidden
+      ></p>
+    </details>
+
     <form action="{{ routes.cart_url }}" method="post" class="joeve-cart-footer__form">
       <button type="submit" name="checkout" class="joeve-cart-footer__checkout">
         <span>{{ 'joeve.cart.checkout' | t }}</span>
@@ -112,6 +136,66 @@
             };
             var template = this.dataset.template || '[from] – [to]';
             this.textContent = template.replace('[from]', add(min)).replace('[to]', add(max));
+          }
+        });
+      }
+
+      // Code promo : appliqué au panier sans recharger la page
+      if (!window.joevePromoReady) {
+        window.joevePromoReady = true;
+        document.addEventListener('submit', async function (event) {
+          var form = event.target.closest && event.target.closest('[data-joeve-promo]');
+          if (!form) return;
+          event.preventDefault();
+          var input = form.querySelector('input');
+          var button = form.querySelector('button');
+          var message = form.parentElement.querySelector('[data-joeve-promo-message]');
+          var code = input.value.trim();
+          if (!code) return;
+          var root = (window.Shopify && window.Shopify.routes && window.Shopify.routes.root) || '/';
+          var cartMini = document.querySelector('xo-cart-mini');
+          button.disabled = true;
+          try {
+            var current = await fetch(root + 'cart.js').then(function (r) { return r.json(); });
+            var codes = (current.discount_codes || []).map(function (d) { return d.code; });
+            if (codes.indexOf(code) === -1) codes.push(code);
+            var res = await fetch(root + 'cart/update.js', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ discount: codes.join(','), sections: cartMini ? cartMini.id : undefined })
+            });
+            var cart = await res.json();
+            var applied = (cart.discount_codes || []).some(function (d) {
+              return d.code.toLowerCase() === code.toLowerCase() && d.applicable;
+            });
+            message.hidden = false;
+            message.textContent = applied ? message.dataset.ok : message.dataset.invalid;
+            message.classList.toggle('is-error', !applied);
+            if (!applied) {
+              // On retire le code refusé pour ne pas le garder dans le panier
+              await fetch(root + 'cart/update.js', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ discount: codes.filter(function (c) { return c !== code; }).join(',') })
+              });
+              return;
+            }
+            input.value = '';
+            // Met à jour les montants du panier (total, économies, remises)
+            var html = cart.sections && cartMini && cart.sections[cartMini.id];
+            if (html) {
+              var doc = new DOMParser().parseFromString(html, 'text/html');
+              document.querySelectorAll('xo-cart-will-change[xo-unique-id]').forEach(function (el) {
+                var fresh = doc.querySelector('xo-cart-will-change[xo-unique-id="' + el.getAttribute('xo-unique-id') + '"]');
+                if (fresh && fresh.innerHTML !== el.innerHTML) el.innerHTML = fresh.innerHTML;
+              });
+            }
+          } catch (e) {
+            message.hidden = false;
+            message.textContent = message.dataset.invalid;
+            message.classList.add('is-error');
+          } finally {
+            button.disabled = false;
           }
         });
       }

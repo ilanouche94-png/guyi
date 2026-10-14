@@ -19,7 +19,12 @@
       "checkout": "Afrekenen",
       "delivered_between": "Geleverd tussen [from] en [to]",
       "payment_note": "Veilig betalen in dollars (USD), omgerekend door je bank",
-      "returns_note": "30 dagen retour · Veilig betalen"
+      "returns_note": "30 dagen retour · Veilig betalen",
+      "promo_question": "Een kortingscode?",
+      "promo_placeholder": "Kortingscode",
+      "promo_apply": "Toepassen",
+      "promo_applied": "Code toegepast ✓",
+      "promo_invalid": "Deze code is niet geldig voor deze winkelwagen"
     },
     "delivery": {
       "in_stock_between": "Op voorraad: geleverd tussen [from] en [to]"

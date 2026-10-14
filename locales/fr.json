@@ -19,7 +19,12 @@
       "checkout": "Commander",
       "delivered_between": "Livrée entre [from] et [to]",
       "payment_note": "Paiement sécurisé en dollars (USD), converti par votre banque",
-      "returns_note": "Retours sous 30 jours · Paiement sécurisé"
+      "returns_note": "Retours sous 30 jours · Paiement sécurisé",
+      "promo_question": "Un code promo ?",
+      "promo_placeholder": "Code promo",
+      "promo_apply": "Appliquer",
+      "promo_applied": "Code appliqué ✓",
+      "promo_invalid": "Ce code n'est pas valide pour ce panier"
     },
     "delivery": {
       "in_stock_between": "En stock : livré chez vous entre [from] et [to]"

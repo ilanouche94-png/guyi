@@ -400,7 +400,89 @@
     font-size: 1.2rem;
   }
 
+  .joeve-cart-footer__savings {
+    font-weight: 500;
+  }
+
   .joeve-cart-footer__savings-amount {
+    color: #8c1c16;
+    font-weight: 600;
+  }
+
+  /* Code promo */
+  .joeve-promo {
+    margin-top: 0.6rem;
+    border-top: 1px solid #ececec;
+    border-bottom: 1px solid #ececec;
+  }
+
+  .joeve-promo__toggle {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.7rem 0;
+    font-size: 1.3rem;
+    color: #111111;
+    list-style: none;
+    cursor: pointer;
+  }
+
+  .joeve-promo__toggle::-webkit-details-marker {
+    display: none;
+  }
+
+  .joeve-promo__toggle span {
+    font-size: 1.6rem;
+    font-weight: 400;
+    line-height: 1;
+    transition: transform 0.2s ease;
+  }
+
+  .joeve-promo[open] .joeve-promo__toggle span {
+    transform: rotate(45deg);
+  }
+
+  .joeve-promo__form {
+    display: flex;
+    gap: 0.6rem;
+    padding-bottom: 0.8rem;
+  }
+
+  .joeve-promo__input {
+    flex: 1;
+    min-width: 0;
+    height: 3.6rem;
+    padding: 0 1rem;
+    border: 1px solid #d6d6d6;
+    border-radius: 0;
+    background: #ffffff;
+    font-size: 1.6rem; /* 16 px : évite le zoom automatique sur iPhone */
+    color: #111111;
+  }
+
+  .joeve-promo__apply {
+    flex-shrink: 0;
+    height: 3.6rem;
+    padding: 0 1.4rem;
+    border: 1px solid #111111;
+    border-radius: 0;
+    background: #ffffff;
+    color: #111111;
+    font-size: 1.25rem;
+    cursor: pointer;
+  }
+
+  .joeve-promo__apply:disabled {
+    opacity: 0.5;
+  }
+
+  .joeve-promo__message {
+    margin: 0 0 0.8rem;
+    font-size: 1.15rem;
+    color: #2f7d45;
+  }
+
+  .joeve-promo__message.is-error {
     color: #8c1c16;
   }
 

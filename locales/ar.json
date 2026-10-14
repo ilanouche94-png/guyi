@@ -23,7 +23,12 @@
       "checkout": "إتمام الطلب",
       "delivered_between": "يصل بين [from] و[to]",
       "payment_note": "دفع آمن بالدولار الأمريكي (USD)، يحوّله البنك الخاص بك",
-      "returns_note": "إرجاع خلال 30 يومًا · دفع آمن"
+      "returns_note": "إرجاع خلال 30 يومًا · دفع آمن",
+      "promo_question": "هل لديكِ رمز خصم؟",
+      "promo_placeholder": "رمز الخصم",
+      "promo_apply": "تطبيق",
+      "promo_applied": "تم تطبيق الرمز ✓",
+      "promo_invalid": "هذا الرمز غير صالح لهذه السلة"
     },
     "delivery": {
       "in_stock_between": "متوفر: يصل بين [from] و[to]"
