@@ -11,6 +11,8 @@ export interface Env {
   SHOPIFY_CLIENT_ID?: string;
   SHOPIFY_CLIENT_SECRET?: string;
   SHOPIFY_WEBHOOK_SECRET?: string;
+  // Stockage Cloudflare KV qui garde les traductions des avis (une fois par avis et par langue).
+  REVIEW_CACHE?: KVNamespace;
 }
 
 let cachedToken: { value: string; expiresAt: number } | null = null;

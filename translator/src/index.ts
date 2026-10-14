@@ -2,6 +2,7 @@
 // et lance la traduction automatique du produit en tâche de fond.
 
 import { translateProduct, type Env } from "./core";
+import { handleReviews } from "./reviews";
 
 async function validHmac(body: string, header: string | null, secret: string): Promise<boolean> {
   if (!header) return false;
@@ -25,6 +26,10 @@ export default {
   async fetch(request: Request, rawEnv: Env, ctx: ExecutionContext): Promise<Response> {
     // Adresse de la boutique par défaut (pour un Worker créé directement dans le site Cloudflare).
     const env: Env = { ...rawEnv, SHOP_DOMAIN: rawEnv.SHOP_DOMAIN || "q0uptb-wj.myshopify.com" };
+
+    // Traduction des avis clients, appelée depuis le thème
+    if (new URL(request.url).pathname === "/reviews") return handleReviews(request, env);
+
     if (request.method !== "POST") {
       // Page de contrôle : indique quels réglages sont en place (sans jamais afficher leur valeur).
       const check = (value?: string) => (value ? "OK" : "MANQUANT");
@@ -35,6 +40,7 @@ export default {
           `SHOPIFY_CLIENT_ID : ${check(env.SHOPIFY_CLIENT_ID || env.SHOPIFY_ADMIN_TOKEN)}`,
           `SHOPIFY_CLIENT_SECRET : ${check(env.SHOPIFY_CLIENT_SECRET || env.SHOPIFY_ADMIN_TOKEN)}`,
           `SHOPIFY_WEBHOOK_SECRET : ${check(env.SHOPIFY_WEBHOOK_SECRET)}`,
+          `REVIEW_CACHE (stockage KV des avis) : ${env.REVIEW_CACHE ? "OK" : "MANQUANT"}`,
         ].join("\n"),
         { status: 200, headers: { "Content-Type": "text/plain; charset=utf-8" } },
       );
