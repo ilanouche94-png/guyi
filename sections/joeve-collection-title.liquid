@@ -1,0 +1,63 @@
+{% comment %}
+  Titre simple en haut des pages collection (sans image).
+  Le nom de la collection est traduit automatiquement dans la langue du visiteur.
+{% endcomment %}
+{%- assign t = collection.title | default: section.settings.fallback -%}
+
+<style>
+  .joeve-ct-{{ section.id }} {
+    padding: {{ section.settings.pad_top_desktop }}px 16px {{ section.settings.pad_bottom_desktop }}px;
+    text-align: center;
+  }
+  .joeve-ct-{{ section.id }} h1 {
+    margin: 0;
+    font-family: var(--font-body-family, inherit);
+    font-size: {{ section.settings.size_desktop }}px;
+    font-weight: 400;
+    letter-spacing: 0.12em;
+    line-height: 1.2;
+    text-transform: uppercase;
+  }
+  .joeve-ct-{{ section.id }} .joeve-ct__count {
+    margin: 6px 0 0;
+    font-size: 12px;
+    letter-spacing: 0.08em;
+    opacity: 0.6;
+    text-transform: uppercase;
+  }
+  @media screen and (max-width: 749px) {
+    .joeve-ct-{{ section.id }} {
+      padding-top: {{ section.settings.pad_top_mobile }}px;
+      padding-bottom: {{ section.settings.pad_bottom_mobile }}px;
+    }
+    .joeve-ct-{{ section.id }} h1 {
+      font-size: {{ section.settings.size_mobile }}px;
+    }
+  }
+</style>
+
+<div class="joeve-ct-{{ section.id }}">
+  <h1>{{ t | escape }}</h1>
+  {%- if section.settings.show_count and collection.products_count > 0 -%}
+    <p class="joeve-ct__count">{{ collection.products_count }}</p>
+  {%- endif -%}
+</div>
+
+{% schema %}
+{
+  "name": "Titre de collection",
+  "tag": "section",
+  "settings": [
+    { "type": "text", "id": "fallback", "label": "Titre si aucune collection", "default": "Collection" },
+    { "type": "checkbox", "id": "show_count", "label": "Afficher le nombre de produits", "default": false },
+    { "type": "range", "id": "size_desktop", "label": "Taille du titre (ordinateur)", "min": 14, "max": 60, "step": 1, "unit": "px", "default": 28 },
+    { "type": "range", "id": "size_mobile", "label": "Taille du titre (téléphone)", "min": 12, "max": 40, "step": 1, "unit": "px", "default": 20 },
+    { "type": "range", "id": "pad_top_desktop", "label": "Espace au-dessus (ordinateur)", "min": 0, "max": 100, "step": 2, "unit": "px", "default": 40 },
+    { "type": "range", "id": "pad_bottom_desktop", "label": "Espace en dessous (ordinateur)", "min": 0, "max": 100, "step": 2, "unit": "px", "default": 10 },
+    { "type": "range", "id": "pad_top_mobile", "label": "Espace au-dessus (téléphone)", "min": 0, "max": 100, "step": 2, "unit": "px", "default": 24 },
+    { "type": "range", "id": "pad_bottom_mobile", "label": "Espace en dessous (téléphone)", "min": 0, "max": 100, "step": 2, "unit": "px", "default": 6 }
+  ],
+  "presets": [{ "name": "Titre de collection" }],
+  "enabled_on": { "templates": ["collection"] }
+}
+{% endschema %}
